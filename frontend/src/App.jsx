@@ -4,11 +4,15 @@ import AddDoctor from "./pages/admin/AddDoctor"
 import DoctorList from "./pages/admin/DoctorList"
 import AppointmentDetails from "./pages/admin/AppointmentDetails"
 import Messages from "./pages/admin/Messages"
+<<<<<<< HEAD
 =======
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 >>>>>>> Stashed changes
+=======
+import AppointmentHistory from "./pages/Patient/AppointmentHistory"
+>>>>>>> e2da18aed612d7d59fbe728a9bcb1556a81d110a
 
 import AddDoctor from "./pages/admin/AddDoctor";
 import DoctorList from "./pages/admin/DoctorList";
@@ -30,6 +34,7 @@ function App() {
         {/* <Sidebar /> */}
         <div className="p-6 w-full">
           <Routes>
+            <Route path="/patient/history" element={<AppointmentHistory/>}/>
             <Route path="/admin/messages" element={<Messages />} />
             <Route path="/admin/add-doctor" element={<AddDoctor />} />
             <Route path="/admin/doctor-list" element={<DoctorList/>}/>
