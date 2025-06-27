@@ -1,4 +1,3 @@
-// src/pages/Patient/Dashboard.jsx
 import React from 'react';
 import {
   AppBar,
@@ -16,8 +15,9 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { Logout } from '@mui/icons-material';
 import doctorImg from '../../assets/image.jpg';
 
+// TODO: Replace with actual user data from context/auth
 const user = {
-  name: 'John',
+  name: '', // <-- dynamically set user's name
 };
 
 const features = [
@@ -83,14 +83,12 @@ const Dashboard = () => {
         }}
       >
         <Box sx={{ maxWidth: 600 }}>
-          
-<Typography variant="h4" fontWeight="bold" gutterBottom>
-  Welcome back, {user.name} 👋
-</Typography>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Welcome back{user.name ? `, ${user.name}` : ''} 👋
+          </Typography>
           <Typography variant="h5" fontWeight="medium" gutterBottom>
-  Your health records are just a click away.
-</Typography>
-
+            Your health records are just a click away.
+          </Typography>
           <Typography variant="body1" mb={3}>
             Book appointments, manage your prescriptions, and access your medical history with ease.
           </Typography>

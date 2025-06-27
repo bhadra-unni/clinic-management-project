@@ -1,5 +1,4 @@
-// src/pages/Patient/BookAppointment.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -10,43 +9,75 @@ import {
   Select,
   Button,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CloseIcon from '@mui/icons-material/Close';
 import dayjs from 'dayjs';
 import doctorImg from '../../assets/image.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const BookAppointment = () => {
-  const [department, setDepartment] = useState('');
+  const [departments, setDepartments] = useState([]);
+  const [doctorsByDept, setDoctorsByDept] = useState({});
   const [doctor, setDoctor] = useState('');
+  const [department, setDepartment] = useState('');
   const [date, setDate] = useState(null);
-  const [slot, setSlot] = useState('');
   const [loading, setLoading] = useState(false);
-  const [openSuccess, setOpenSuccess] = useState(false);
 
-  const departments = ['Cardiology', 'Neurology'];
-  const doctors = {
-    Cardiology: ['Dr. Ravi', 'Dr. Neha'],
-    Neurology: ['Dr. Sameer'],
-  };
-  const slots = ['10:00 AM', '10:30 AM', '11:00 AM'];
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/doctors');
+        const data = await res.json();
+
+        const grouped = {};
+        data.forEach((doc) => {
+          if (!grouped[doc.department]) grouped[doc.department] = [];
+          grouped[doc.department].push(doc.name);
+        });
+
+        setDoctorsByDept(grouped);
+        setDepartments(Object.keys(grouped));
+      } catch (err) {
+        console.error('Failed to load doctors:', err);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  const handleSubmit = async () => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const payload = {
+        doctor,
+        department,
+        date: dayjs(date).format('YYYY-MM-DD'),
+        status: 'Confirmed',
+        patientName: user?.name || 'Unknown',
+      };
+
+      const res = await fetch('http://localhost:3000/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error('Booking failed');
+
       setDepartment('');
       setDoctor('');
       setDate(null);
-      setSlot('');
+
+      navigate('/patient/history');
+    } catch (err) {
+      console.error('Booking error:', err.message);
+      alert('Failed to book appointment. Try again.');
+    } finally {
       setLoading(false);
-      setOpenSuccess(true);
-    }, 1000);
+    }
   };
 
   return (
@@ -88,22 +119,16 @@ const BookAppointment = () => {
             maxWidth: 500,
             borderRadius: 4,
             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-            border: '1px solid rgba(255,255,255,0.3)',
-            transition: 'transform 0.3s ease-in-out',
-            '&:hover': {
-              transform: 'scale(1.01)',
-            },
           }}
         >
           <Typography variant="h5" fontWeight="bold" align="center" gutterBottom>
             Book Appointment
           </Typography>
 
-          <Typography fontWeight="bold" mt={2}>Select Department</Typography>
+          {/* Department Select */}
           <FormControl fullWidth margin="dense">
-            <InputLabel id="department-label">Department</InputLabel>
+            <InputLabel>Department</InputLabel>
             <Select
-              labelId="department-label"
               value={department}
               label="Department"
               onChange={(e) => {
@@ -117,22 +142,21 @@ const BookAppointment = () => {
             </Select>
           </FormControl>
 
-          <Typography fontWeight="bold" mt={2}>Select Doctor</Typography>
+          {/* Doctor Select */}
           <FormControl fullWidth margin="dense" disabled={!department}>
-            <InputLabel id="doctor-label">Doctor</InputLabel>
+            <InputLabel>Doctor</InputLabel>
             <Select
-              labelId="doctor-label"
               value={doctor}
               label="Doctor"
               onChange={(e) => setDoctor(e.target.value)}
             >
-              {(doctors[department] || []).map((doc) => (
+              {(doctorsByDept[department] || []).map((doc) => (
                 <MenuItem key={doc} value={doc}>{doc}</MenuItem>
               ))}
             </Select>
           </FormControl>
 
-          <Typography fontWeight="bold" mt={2}>Select Date</Typography>
+          {/* Date Picker */}
           <DatePicker
             label="Choose Date"
             value={date}
@@ -141,57 +165,16 @@ const BookAppointment = () => {
             slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
           />
 
-          <Typography fontWeight="bold" mt={2}>Choose Time Slot</Typography>
-          <Box display="flex" gap={2} mt={1} flexWrap="wrap">
-            {slots.map((s) => (
-              <Button
-                key={s}
-                variant={slot === s ? 'contained' : 'outlined'}
-                onClick={() => setSlot(s)}
-                sx={{ transition: '0.2s', '&:hover': { transform: 'scale(1.05)' } }}
-              >
-                {s}
-              </Button>
-            ))}
-          </Box>
-
+          {/* Submit Button */}
           <Box mt={4} textAlign="center">
             <Button
               variant="contained"
-              disabled={!department || !doctor || !date || !slot || loading}
+              disabled={!department || !doctor || !date || loading}
               onClick={handleSubmit}
-              sx={{
-                transition: '0.3s',
-                '&:hover': { transform: 'scale(1.05)' },
-              }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Confirm Appointment'}
             </Button>
           </Box>
-
-          <Dialog open={openSuccess} onClose={() => setOpenSuccess(false)}>
-            <DialogTitle>
-              <Box display="flex" alignItems="center" gap={1}>
-                <CheckCircleIcon color="success" />
-                Appointment Confirmed
-                <IconButton
-                  aria-label="close"
-                  onClick={() => setOpenSuccess(false)}
-                  sx={{ ml: 'auto' }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-            </DialogTitle>
-            <DialogContent>
-              <Typography>Your appointment has been successfully booked.</Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setOpenSuccess(false)} autoFocus>
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
         </Paper>
       </Box>
     </Box>

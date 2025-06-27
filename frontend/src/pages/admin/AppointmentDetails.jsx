@@ -31,7 +31,7 @@ const AppointmentDetails = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/appointments'); // your API endpoint
+      const response = await axios.get('http://localhost:3000/appointments'); // your API endpoint
       setAppointments(response.data);
     } catch (error) {
       console.error('Failed to fetch appointments', error);
@@ -40,7 +40,7 @@ const AppointmentDetails = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/appointments/${id}/cancel`);
+      await axios.put(`http://localhost:3000/appointments/${id}/cancel`);
       fetchAppointments();
     } catch (error) {
       console.error('Error cancelling appointment:', error);

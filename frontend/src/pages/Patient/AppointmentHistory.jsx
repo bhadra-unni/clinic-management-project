@@ -1,4 +1,3 @@
-// src/pages/Patient/AppointmentHistory.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
@@ -12,23 +11,42 @@ const AppointmentHistory = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setAppointments([
-      {
-        id: 1,
-        doctor: 'Dr. Anita',
-        date: '2025-06-28',
-        time: '10:30 AM',
-        status: 'Confirmed',
-      },
-    ]);
-    setLoading(false);
+    const fetchAppointments = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/appointments');
+        const data = await res.json();
+        setAppointments(data);
+      } catch (err) {
+        console.error('Failed to fetch appointments:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
   }, []);
 
-  const handleCancel = (id) => {
-    console.log(`Cancel appointment ID: ${id}`);
+  const handleCancel = async (_id) => {
+    try {
+      await fetch(`http://localhost:3000/appointments/cancel/${_id}`, {
+        method: 'PUT',
+      });
+
+      setAppointments((prev) =>
+        prev.map((appt) =>
+          appt._id === _id ? { ...appt, status: 'Cancelled' } : appt
+        )
+      );
+    } catch (err) {
+      console.error('Failed to cancel:', err);
+    }
   };
 
-  const isFutureDate = (dateStr) => dayjs(dateStr).isAfter(dayjs());
+  const canCancelAppointment = (dateStr, timeStr) => {
+    const appointmentTime = dayjs(`${dateStr} ${timeStr}`, 'YYYY-MM-DD hh:mm A');
+    const now = dayjs();
+    return appointmentTime.isAfter(now.add(15, 'minute'));
+  };
 
   return (
     <Box
@@ -88,34 +106,35 @@ const AppointmentHistory = () => {
               <TableHead sx={{ backgroundColor: '#1976d2' }}>
                 <TableRow>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Doctor</TableCell>
+                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Time</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
                   <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {appointments.map((appt) => (
-                  <TableRow key={appt.id}>
+                  <TableRow key={appt._id}>
                     <TableCell>{appt.doctor}</TableCell>
+                    <TableCell>{appt.department}</TableCell>
                     <TableCell>{dayjs(appt.date).format('DD MMM YYYY')}</TableCell>
-                    <TableCell>{appt.time}</TableCell>
+                    
                     <TableCell>
                       <Typography color={
                         appt.status === 'Confirmed' ? 'green'
-                        : appt.status === 'Pending' ? 'orange'
-                        : 'red'
+                          : appt.status === 'Pending' ? 'orange'
+                          : 'red'
                       }>
                         {appt.status}
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {appt.status === 'Confirmed' && isFutureDate(appt.date) && (
+                      {appt.status === 'Confirmed' && canCancelAppointment(appt.date, appt.time) && (
                         <Button
                           variant="outlined"
                           color="error"
                           size="small"
-                          onClick={() => handleCancel(appt.id)}
+                          onClick={() => handleCancel(appt._id)}
                           sx={{ transition: '0.3s', '&:hover': { transform: 'scale(1.05)' } }}
                         >
                           Cancel
