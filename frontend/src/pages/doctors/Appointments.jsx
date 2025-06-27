@@ -9,7 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const mockAppointments = [
   {
     id: 1,
-    patientName: 'Arjun Menon',
+    patientName: 'Arjun ',
     date: '2025-06-27',
     specialization: 'Cardiology',
     notes: '',
@@ -19,7 +19,7 @@ const mockAppointments = [
   },
   {
     id: 2,
-    patientName: 'Riya Nair',
+    patientName: 'Riya ',
     date: '2025-06-26',
     specialization: 'Neurology',
     notes: '',

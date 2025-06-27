@@ -42,10 +42,11 @@ const AppointmentHistory = () => {
     }
   };
 
-  const canCancelAppointment = (dateStr, timeStr) => {
-    const appointmentTime = dayjs(`${dateStr} ${timeStr}`, 'YYYY-MM-DD hh:mm A');
+  // Updated logic: allow cancel only if appointment is >24 hours away
+  const canCancelAppointment = (dateStr) => {
+    const appointmentDate = dayjs(dateStr);
     const now = dayjs();
-    return appointmentTime.isAfter(now.add(15, 'minute'));
+    return appointmentDate.isAfter(now.add(24, 'hour'));
   };
 
   return (
@@ -118,7 +119,6 @@ const AppointmentHistory = () => {
                     <TableCell>{appt.doctor}</TableCell>
                     <TableCell>{appt.department}</TableCell>
                     <TableCell>{dayjs(appt.date).format('DD MMM YYYY')}</TableCell>
-                    
                     <TableCell>
                       <Typography color={
                         appt.status === 'Confirmed' ? 'green'
@@ -129,7 +129,7 @@ const AppointmentHistory = () => {
                       </Typography>
                     </TableCell>
                     <TableCell>
-                      {appt.status === 'Confirmed' && canCancelAppointment(appt.date, appt.time) && (
+                      {appt.status === 'Confirmed' && canCancelAppointment(appt.date) && (
                         <Button
                           variant="outlined"
                           color="error"
