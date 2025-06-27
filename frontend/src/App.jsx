@@ -14,7 +14,7 @@ import Dashboard from './pages/Patient/Dashboard';
 import AppointmentHistory from './pages/Patient/AppointmentHistory';
 import ViewPrescription from './pages/Patient/ViewPrescription';
 import BookAppointment from "./pages/Patient/BookAppointment";
-import { useState } from "react";
+
 import PatientLogin from "./pages/auth/PatientLogin";
 import PatientSignup from "./pages/auth/PatientSignUp";
 import DoctorLogin from '/src/pages/auth/DoctorLogin.jsx';
@@ -24,8 +24,12 @@ import ContactUs from "./pages/auth/ContactUs";
 import HomePage from "./pages/auth/HomePage";
 
 
+import DoctorDashboard from "./pages/doctors/DoctorDashboard";
+import DoctorHome from "./pages/doctors/DoctorHome";
+import Appointments from "./pages/doctors/Appointments";
+import AboutUs from "./pages/doctors/AboutUs";
+
 function App() {
-  const [count, setCount] = useState(0)
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <BrowserRouter>
@@ -47,6 +51,14 @@ function App() {
           <Route path="/admin/doctor-list" element={<DoctorList />} />
           <Route path="/admin/appointment-details" element={<AppointmentDetails />} />
 
+
+
+          {/* ✅ Doctors route */}
+          <Route path="/doctor/dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
+          <Route path="/doctor/appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
+          <Route path="/doctor/about" element={<DoctorDashboard><AboutUs /></DoctorDashboard>} />
+
+
           {/*Login pages route(auth)*/}
               <Route path="/" element={<HomePage />} />
       <Route path="/patient/login" element={<PatientLogin />} />
@@ -54,7 +66,7 @@ function App() {
       <Route path="/doctor/login" element={<DoctorLogin />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/contact" element={<ContactUs />} />
-     
+
         </Routes>
       </BrowserRouter>
     </LocalizationProvider>
