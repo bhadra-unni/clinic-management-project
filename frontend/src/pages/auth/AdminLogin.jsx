@@ -13,6 +13,7 @@ import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
+import axios from 'axios';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -20,11 +21,23 @@ const AdminLogin = () => {
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    alert(`Admin logged in: ${email}`);
-    navigate('/admin'); // redirect to admin dashboard
-  };
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post('http://localhost:3000/admins/login', {
+      email,
+      password,
+    });
+
+    // Store token in localStorage
+    localStorage.setItem('adminToken', res.data.token);
+
+    alert("Login successful!");
+    navigate('/admin/dashboard'); // redirect
+  } catch (err) {
+    alert("Login failed: " + (err.response?.data || err.message));
+  }
+};
 
   return (
     <Box

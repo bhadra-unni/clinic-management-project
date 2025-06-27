@@ -4,8 +4,11 @@ const app = express();  //initialise   1
 const mongoose = require('mongoose');  // 1
 const cors = require('cors');   //1
 
-const doctorRoutes = require('./routes/doctorRoutes');
+const admindocRoute1 = require('./routes/admindocRoute1');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
+
 
 // Connect MongoDB
 require('./connection');  //1
@@ -22,8 +25,10 @@ app.get('/', (req, res) => {   // 1
 
 
 // Routes
-app.use('/doctors', doctorRoutes);
+app.use('/doctors', admindocRoute1);
 app.use('/appointments', appointmentRoutes);
+app.use('/admins', adminRoutes);
+
 
 // Start server
 app.listen(3000, () => {   // 1
