@@ -10,11 +10,11 @@ import {
   Container,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
 
-const PatientLogin = () => {
+const DoctorLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -22,8 +22,8 @@ const PatientLogin = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    alert(`Logged in as ${email}`);
-    navigate('/patient'); // redirect after login
+    alert(`Doctor logged in: ${email}`);
+    navigate('/doctor'); // redirect to doctor dashboard
   };
 
   return (
@@ -33,9 +33,9 @@ const PatientLogin = () => {
         background: `url(${doctorBg}) center right / cover no-repeat`,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: { xs: 'center', md: 'flex-start' }, // center on mobile, left on desktop
-        px: { xs: 2, md: 10 }, // padding from left
-        backgroundColor: '#f5faff', // fallback
+        justifyContent: { xs: 'center', md: 'flex-start' },
+        px: { xs: 2, md: 10 },
+        backgroundColor: '#f5faff',
       }}
     >
       <Container maxWidth="sm">
@@ -62,7 +62,7 @@ const PatientLogin = () => {
               gutterBottom
               sx={{ color: '#1976d2' }}
             >
-              Welcome to ClinicCare+
+              Doctor Login - ClinicCare+
             </Typography>
 
             <Typography
@@ -70,7 +70,7 @@ const PatientLogin = () => {
               align="center"
               sx={{ color: '#555', mb: 3 }}
             >
-              Log in to access your appointments, history and care.
+              Log in to manage appointments, patients, and reports.
             </Typography>
 
             <form onSubmit={handleLogin}>
@@ -136,25 +136,6 @@ const PatientLogin = () => {
                 Sign In
               </Button>
             </form>
-
-            <Typography
-              variant="body2"
-              mt={3}
-              align="center"
-              sx={{ color: '#333' }}
-            >
-              Don’t have an account?{' '}
-              <Link
-                to="/patient/signup"
-                style={{
-                  color: '#1976d2',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                }}
-              >
-                Sign Up
-              </Link>
-            </Typography>
           </Paper>
         </motion.div>
       </Container>
@@ -162,4 +143,4 @@ const PatientLogin = () => {
   );
 };
 
-export default PatientLogin;
+export default DoctorLogin;
