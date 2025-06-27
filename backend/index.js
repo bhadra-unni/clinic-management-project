@@ -6,6 +6,7 @@ const cors = require('cors');   //1
 
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const prescriptionRoutes = require('./routes/prescriptions');
 
 // Connect MongoDB
 require('./connection');  //1
@@ -24,6 +25,8 @@ app.get('/', (req, res) => {   // 1
 // Routes
 app.use('/doctors', doctorRoutes);
 app.use('/appointments', appointmentRoutes);
+app.use('/prescriptions', prescriptionRoutes);
+
 
 // Start server
 app.listen(3000, () => {   // 1
