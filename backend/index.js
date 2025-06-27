@@ -10,11 +10,11 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
 const prescriptionRoutes = require('./routes/prescriptions');
+const messageRoutes = require('./routes/messageRoutes');
 
 
 // Connect MongoDB
 require('./connection');  //1
-
 
 
 // Middleware
@@ -33,6 +33,7 @@ app.use('/appointments', appointmentRoutes);
 app.use('/admins', adminRoutes);
 
 app.use('/prescriptions', prescriptionRoutes);
+app.use('/messages', messageRoutes); // New
 
 
 
