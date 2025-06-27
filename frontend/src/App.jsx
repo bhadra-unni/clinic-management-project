@@ -6,6 +6,8 @@ import AddDoctor from "./pages/admin/AddDoctor";
 import DoctorList from "./pages/admin/DoctorList";
 import AppointmentDetails from "./pages/admin/AppointmentDetails";
 import Messages from "./pages/admin/Messages";
+import PatientList from "./pages/admin/PatientList";
+import Dashboard2 from './pages/admin/Dashboard2';
 
 import PatientLayout from './pages/Patient/PatientLayout';
 import Dashboard from './pages/Patient/Dashboard';
@@ -20,6 +22,7 @@ import DoctorLogin from '/src/pages/auth/DoctorLogin.jsx';
 import AdminLogin from "./pages/auth/AdminLogin";
 import ContactUs from "./pages/auth/ContactUs";
 import HomePage from "./pages/auth/HomePage";
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -37,6 +40,8 @@ function App() {
           </Route>
 
           {/* ✅ Admin routes (outside of PatientLayout) */}
+           <Route path="/admin/dashboard" element={<Dashboard2 />} />
+           <Route path="/admin/patient-list" element={<PatientList />} />
           <Route path="/admin/messages" element={<Messages />} />
           <Route path="/admin/add-doctor" element={<AddDoctor />} />
           <Route path="/admin/doctor-list" element={<DoctorList />} />
