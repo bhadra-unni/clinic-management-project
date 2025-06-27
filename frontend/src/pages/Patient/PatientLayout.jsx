@@ -31,7 +31,7 @@ const PatientLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isDashboard = location.pathname === '/patient';
+  const isDashboard = location.pathname === '/patient/dashboard';
 
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
