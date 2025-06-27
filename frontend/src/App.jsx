@@ -56,7 +56,7 @@ function App() {
           {/* ✅ Doctors route */}
           <Route path="/doctor/dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
           <Route path="/doctor/appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
-          <Route path="/doctor/about" element={<DoctorDashboard><AboutUs /></DoctorDashboard>} />
+          <Route path="/doctor/aboutus" element={<DoctorDashboard><AboutUs /></DoctorDashboard>} />
 
 
           {/*Login pages route(auth)*/}

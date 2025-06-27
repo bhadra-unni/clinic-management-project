@@ -23,7 +23,7 @@ const DoctorLogin = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     alert(`Doctor logged in: ${email}`);
-    navigate('/doctor'); // redirect to doctor dashboard
+    navigate('/doctor/dashboard'); // redirect to doctor dashboard
   };
 
   return (
