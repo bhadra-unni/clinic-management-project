@@ -13,7 +13,14 @@ import AppointmentHistory from './pages/Patient/AppointmentHistory';
 import ViewPrescription from './pages/Patient/ViewPrescription';
 import BookAppointment from "./pages/Patient/BookAppointment";
 
+import DoctorDashboard from "./pages/doctors/DoctorDashboard";
+import DoctorHome from "./pages/doctors/DoctorHome";
+import Appointments from "./pages/doctors/Appointments";
+import AboutUs from "./pages/doctors/AboutUs";
+
 function App() {
+  
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <BrowserRouter>
@@ -32,6 +39,13 @@ function App() {
           <Route path="/admin/add-doctor" element={<AddDoctor />} />
           <Route path="/admin/doctor-list" element={<DoctorList />} />
           <Route path="/admin/appointment-details" element={<AppointmentDetails />} />
+
+
+          {/* ✅ Doctors route */}
+          <Route path="/doctor/dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
+          <Route path="/doctor/appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
+          <Route path="/doctor/about" element={<DoctorDashboard><AboutUs /></DoctorDashboard>} />
+
         </Routes>
       </BrowserRouter>
     </LocalizationProvider>
