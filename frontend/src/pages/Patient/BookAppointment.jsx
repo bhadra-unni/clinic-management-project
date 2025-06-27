@@ -84,7 +84,7 @@ const BookAppointment = () => {
     <Box sx={{ width: '100%' }}>
       <Box
         sx={{
-          pt: 8,
+          pt: 4,
           minHeight: '100vh',
           position: 'relative',
           overflow: 'hidden',
@@ -92,6 +92,7 @@ const BookAppointment = () => {
           justifyContent: 'center',
           alignItems: 'center',
           px: 2,
+          mt:-4,
           '::before': {
             content: '""',
             position: 'absolute',
@@ -114,9 +115,9 @@ const BookAppointment = () => {
             zIndex: 1,
             backdropFilter: 'blur(10px)',
             backgroundColor: 'rgba(255, 255, 255, 0.7)',
-            p: 4,
+            p: 5,
             width: '100%',
-            maxWidth: 500,
+            maxWidth: 600,
             borderRadius: 4,
             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
           }}
@@ -126,6 +127,7 @@ const BookAppointment = () => {
           </Typography>
 
           {/* Department Select */}
+          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>Select Department:</Typography>
           <FormControl fullWidth margin="dense">
             <InputLabel>Department</InputLabel>
             <Select
@@ -143,6 +145,7 @@ const BookAppointment = () => {
           </FormControl>
 
           {/* Doctor Select */}
+          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>Select Doctor:</Typography>
           <FormControl fullWidth margin="dense" disabled={!department}>
             <InputLabel>Doctor</InputLabel>
             <Select
@@ -157,6 +160,7 @@ const BookAppointment = () => {
           </FormControl>
 
           {/* Date Picker */}
+          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>Select Date:</Typography>
           <DatePicker
             label="Choose Date"
             value={date}
