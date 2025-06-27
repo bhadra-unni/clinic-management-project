@@ -24,7 +24,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const drawerWidth = 240;
 
 const navItems = [
-  { text: 'Dashboard', icon: <Dashboard />, link: '/admin' },
+  { text: 'Dashboard', icon: <Dashboard />, link: '/admin/dashboard' },
   { text: 'Doctor List', icon: <People />, link: '/admin/doctor-list' },
   { text: 'Patient List', icon: <People />, link: '/admin/patient-list' },
   { text: 'Appointment Details', icon: <CalendarToday />, link: '/admin/appointment-details' },
