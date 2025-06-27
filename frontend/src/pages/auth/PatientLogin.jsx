@@ -23,7 +23,7 @@ const PatientLogin = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     alert(`Logged in as ${email}`);
-    navigate('/patient'); // redirect after login
+    navigate('/patient/dashboard'); // redirect after login
   };
 
   return (

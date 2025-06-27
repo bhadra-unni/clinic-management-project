@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
+
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import BackgroundLayout from "./BackgroundLayout";
+
+import AuthLayout from "./AuthLayout";
+ import axios from "axios";
+
 
 const ContactUs = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -10,11 +15,25 @@ const ContactUs = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Message sent successfully!");
-    setForm({ name: "", email: "", message: "" });
-  };
+  
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post("http://localhost:3000/messages/send", form);
+    if (res.data.success) {
+      alert("Message sent successfully!");
+      setForm({ name: "", email: "", message: "" });
+    } else {
+      alert("Failed to send message.");
+    }
+  } catch (err) {
+    console.error("Error sending message:", err);
+    alert("An error occurred while sending the message.");
+  }
+};
+
+
 
   return (
     <BackgroundLayout>

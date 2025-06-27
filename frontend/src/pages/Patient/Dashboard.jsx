@@ -68,9 +68,10 @@ const Dashboard = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          pt: `${navbarHeight}px`,
+          
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
+          pt: `calc(${navbarHeight}px + 120px)`,
           justifyContent: 'flex-start',
           px: { xs: 3, md: 10 },
           pb: { xs: 10, md: 12 },
@@ -78,12 +79,12 @@ const Dashboard = () => {
           backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0) 100%), url(${doctorImg})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
-          backgroundPosition: 'top center',
+          backgroundPosition: 'center top',
           width: '100%',
         }}
       >
-        <Box sx={{ maxWidth: 600 }}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Box sx={{ maxWidth: 600,mt:6 }}>
+          <Typography variant="h3" fontWeight="bold" gutterBottom>
             Welcome back{user.name ? `, ${user.name}` : ''} 👋
           </Typography>
           <Typography variant="h5" fontWeight="medium" gutterBottom>
