@@ -7,10 +7,10 @@ const cors = require('cors');   //1
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const prescriptionRoutes = require('./routes/prescriptions');
+const messageRoutes = require('./routes/messageRoutes');
 
 // Connect MongoDB
 require('./connection');  //1
-
 
 
 // Middleware
@@ -26,6 +26,7 @@ app.get('/', (req, res) => {   // 1
 app.use('/doctors', doctorRoutes);
 app.use('/appointments', appointmentRoutes);
 app.use('/prescriptions', prescriptionRoutes);
+app.use('/messages', messageRoutes); // New
 
 
 // Start server
