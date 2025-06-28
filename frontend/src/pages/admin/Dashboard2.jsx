@@ -10,9 +10,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   // Simulated data (replace with props/context/api)
-  const doctorList = [];
+  const doctorList = [1,1,1,1];
   const patientList = [{}]; // 1 dummy patient
-  const appointmentList = [];
+  const appointmentList = [1,1,1,1,1,1,1,1,1];
 
   const cardData = [
     {
