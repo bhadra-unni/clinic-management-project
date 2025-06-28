@@ -40,6 +40,8 @@ const DoctorLogin = () => {
 
       // Store token in localStorage
       localStorage.setItem('doctorId', response.data.doctor.id);
+    
+localStorage.setItem('doctorName', response.data.doctor.name);
        localStorage.setItem('token', response.data.token);
       // Redirect to doctor dashboard (you can update the path)
       navigate('/doctor/dashboard');

@@ -1,33 +1,44 @@
-// src/pages/doctor/Appointment.jsx
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableHead, TableRow, TableCell,
   TableBody, Button, Paper
 } from '@mui/material';
+import axios from 'axios'; // ✅ required
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
-  const fetchAppointments = async () => {
-    const res = await axios.get(`/api/appointments/doctor/Dr. Sharma`);
-    setAppointments(res.data);
-  };
-  fetchAppointments();
-}, []);
+    const fetchAppointments = async () => {
+      const doctorId = localStorage.getItem('doctorId'); // ✅ get doctorId from login
+      if (!doctorId) return console.warn("No doctorId in localStorage");
 
+      try {
+        // 🔍 Fetch the doctor details to get the name
+        const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
+        const doctorName = doctorRes.data.name;
+
+        // 🗓 Fetch appointments for that doctor
+        const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
+        setAppointments(apptRes.data);
+      } catch (err) {
+        console.error("Failed to fetch appointments", err);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
 
   const handleCancel = async (id) => {
-  try {
-    await axios.put(`/api/appointments/cancel/${id}`);
-    setAppointments(prev => prev.map(appt =>
-      appt._id === id ? { ...appt, status: 'Cancelled' } : appt
-    ));
-  } catch (err) {
-    console.error('Cancel failed:', err);
-  }
-};
-
+    try {
+      await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
+      setAppointments(prev => prev.map(appt =>
+        appt._id === id ? { ...appt, status: 'Cancelled' } : appt
+      ));
+    } catch (err) {
+      console.error('Cancel failed:', err);
+    }
+  };
 
   return (
     <Box sx={{ px: { xs: 1, sm: 2 }, py: 2 }}>
@@ -48,8 +59,8 @@ const Appointments = () => {
           </TableHead>
           <TableBody>
             {appointments.map((appt) => (
-              <TableRow key={appt.id}>
-                <TableCell>{appt.patient}</TableCell>
+              <TableRow key={appt._id}>
+                <TableCell>{appt.patientName}</TableCell>
                 <TableCell>{appt.department}</TableCell>
                 <TableCell>{appt.date}</TableCell>
                 <TableCell sx={{ color: appt.status === 'Cancelled' ? 'red' : 'green' }}>
@@ -61,7 +72,7 @@ const Appointments = () => {
                       variant="outlined"
                       color="error"
                       size="small"
-                      onClick={() => handleCancel(appt.id)}
+                      onClick={() => handleCancel(appt._id)}
                     >
                       Cancel
                     </Button>

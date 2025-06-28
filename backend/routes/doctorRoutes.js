@@ -52,7 +52,6 @@ router.post('/login', async (req, res) => {
 router.get('/dashboard/:doctorId', async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
-    console.log("Fetching dashboard for doctor:", doctorId);
 
     const doctor = await docModel.findById(doctorId);
     if (!doctor) {

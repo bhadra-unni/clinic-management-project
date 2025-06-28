@@ -2,17 +2,21 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
   Box, Card, CardContent, Typography, TextField,
-  Button, Divider, Stack, Paper, IconButton
+  Button, Divider, Stack, Paper, IconButton, Snackbar, Alert
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const Prescription = () => {
   const [appointments, setAppointments] = useState([]);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get('/api/appointments/doctor/Dr. Sharma');
+        const doctorName = localStorage.getItem('doctorName');
+        if (!doctorName) return alert("Doctor not logged in");
+
+        const res = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
         const appointmentsWithPrescriptionFields = res.data.map(appt => ({
           ...appt,
           notes: '',
@@ -26,9 +30,9 @@ const Prescription = () => {
     fetchAppointments();
   }, []);
 
-  const handleChange = (index, field, value, apptIndex) => {
+  const handleChange = (medIndex, field, value, apptIndex) => {
     const updated = [...appointments];
-    updated[apptIndex].medicines[index][field] = value;
+    updated[apptIndex].medicines[medIndex][field] = value;
     setAppointments(updated);
   };
 
@@ -46,26 +50,26 @@ const Prescription = () => {
     setAppointments(updated);
   };
 
-  const deleteMedicine = (index, apptIndex) => {
+  const deleteMedicine = (medIndex, apptIndex) => {
     const updated = [...appointments];
-    updated[apptIndex].medicines.splice(index, 1);
+    updated[apptIndex].medicines.splice(medIndex, 1);
     setAppointments(updated);
   };
 
   const savePrescription = async (apptIndex) => {
     const data = appointments[apptIndex];
     try {
-      await axios.post('/api/prescriptions', {
+      await axios.post('http://localhost:3000/prescriptions', {
         patientName: data.patientName,
         date: data.date,
-        specialization: data.department, // assuming 'department' is specialization
+        specialization: data.department,
         notes: data.notes,
         medicines: data.medicines,
       });
-      alert(`Prescription saved for ${data.patientName}`);
+      setSnackbar({ open: true, message: `Prescription saved for ${data.patientName}`, severity: 'success' });
     } catch (err) {
       console.error(err);
-      alert('Error saving prescription');
+      setSnackbar({ open: true, message: 'Error saving prescription', severity: 'error' });
     }
   };
 
@@ -186,6 +190,16 @@ const Prescription = () => {
           </Card>
         ))
       )}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
