@@ -25,6 +25,7 @@ const drawerWidth = 240;
 const navItems = [
   { text: 'Dashboard', icon: <Dashboard />, link: '/doctor/dashboard' },
   { text: 'Appointments', icon: <CalendarToday />, link: '/doctor/appointments' },
+  { text: 'Prescriptions', icon: <Info />, link: '/doctor/prescriptions' },
 ];
 
 const DoctorDashboard = ({ children }) => {
