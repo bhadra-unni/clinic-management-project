@@ -62,7 +62,7 @@ const AppointmentDetails = () => {
                 <TableCell sx={{ color: 'white' }}>Patient Name</TableCell>
                 <TableCell sx={{ color: 'white' }}>Doctor Name</TableCell>
                 <TableCell sx={{ color: 'white' }}>Department</TableCell>
-                <TableCell sx={{ color: 'white' }}>Date & Time</TableCell>
+                <TableCell sx={{ color: 'white' }}>Date</TableCell>
                 <TableCell sx={{ color: 'white' }}>Status</TableCell>
                 <TableCell sx={{ color: 'white' }}>Actions</TableCell>
               </TableRow>
@@ -70,12 +70,12 @@ const AppointmentDetails = () => {
             <TableBody>
               {appointments.length > 0 ? (
                 appointments.map((appt) => (
-                  <TableRow key={appt.id}>
-                    <TableCell>{appt.id}</TableCell>
+                  <TableRow key={appt._id}>
+                    <TableCell>{appt._id}</TableCell>
                     <TableCell>{appt.patientName}</TableCell>
-                    <TableCell>{appt.doctorName}</TableCell>
+                    <TableCell>{appt.doctor}</TableCell>
                     <TableCell>{appt.department}</TableCell>
-                    <TableCell>{appt.date} @ {appt.time}</TableCell>
+                    <TableCell>{appt.date}</TableCell>
                     <TableCell>
                       <Chip label={appt.status} color={statusColors[appt.status] || 'default'} />
                     </TableCell>
