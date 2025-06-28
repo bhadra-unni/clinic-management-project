@@ -10,6 +10,12 @@ import {
   Typography,
   IconButton,
   Alert,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,6 +27,9 @@ const DoctorList = () => {
   const [doctors, setDoctors] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
   const navigate = useNavigate();
 
   const fetchDoctors = async () => {
@@ -50,6 +59,26 @@ const DoctorList = () => {
     navigate('/admin/add-doctor', { state: doctor });
   };
 
+  const handleOpenResetDialog = (id) => {
+    setSelectedDoctorId(id);
+    setOpenDialog(true);
+  };
+
+  const handleResetPassword = async () => {
+    try {
+      await axios.put(`http://localhost:3000/doctors/${selectedDoctorId}/reset-password`, {
+        newPassword,
+      });
+      setSuccess('Password reset successfully');
+    } catch (err) {
+      setError('Failed to reset password');
+    } finally {
+      setOpenDialog(false);
+      setNewPassword('');
+      setSelectedDoctorId(null);
+    }
+  };
+
   return (
     <AdminLayout>
       <br />
@@ -60,7 +89,7 @@ const DoctorList = () => {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-      <TableContainer component={Paper} sx={{ maxWidth: 900, mx: 'auto', mt: 3 }}>
+      <TableContainer component={Paper} sx={{ maxWidth: 1000, mx: 'auto', mt: 3 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -85,12 +114,20 @@ const DoctorList = () => {
                   <IconButton onClick={() => handleDelete(doctor._id)} color="error">
                     <DeleteIcon />
                   </IconButton>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => handleOpenResetDialog(doctor._id)}
+                    sx={{ ml: 1 }}
+                  >
+                    Reset Password
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
             {doctors.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={6} align="center">
                   No doctors found.
                 </TableCell>
               </TableRow>
@@ -98,6 +135,27 @@ const DoctorList = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Reset Password</DialogTitle>
+        <DialogContent>
+          <TextField
+            type="password"
+            label="New Password"
+            fullWidth
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={handleResetPassword}>
+            Reset
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AdminLayout>
   );
 };
