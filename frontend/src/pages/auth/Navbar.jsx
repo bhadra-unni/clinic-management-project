@@ -40,7 +40,7 @@ const Navbar = () => (
       </Typography>
       <Typography
         component="a"
-        href="#"
+        href="/aboutus"
         sx={{
           color: "white",
           textDecoration: "none",

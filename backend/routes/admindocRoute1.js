@@ -46,6 +46,18 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+router.put('/:id/reset-password', async (req, res) => {
+  const { newPassword } = req.body;
+  try {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await docModel.findByIdAndUpdate(req.params.id, { password: hashedPassword });
+    res.send({ message: 'Password reset successfully' });
+  } catch (err) {
+    res.status(500).send({ error: 'Failed to reset password' });
+  }
+});
+
+
 
 // ✅ Final line
 module.exports = router;

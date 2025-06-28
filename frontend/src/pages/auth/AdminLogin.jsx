@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
 import axios from 'axios';
+import Navbar from './Navbar';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -40,7 +41,7 @@ const AdminLogin = () => {
 };
 
   return (
-    <Box
+    <><Navbar /><Box
       sx={{
         minHeight: '100vh',
         background: `url(${doctorBg}) center right / cover no-repeat`,
@@ -101,8 +102,7 @@ const AdminLogin = () => {
                     </InputAdornment>
                   ),
                 }}
-                required
-              />
+                required />
 
               <TextField
                 fullWidth
@@ -129,8 +129,7 @@ const AdminLogin = () => {
                     </InputAdornment>
                   ),
                 }}
-                required
-              />
+                required />
 
               <Button
                 type="submit"
@@ -152,7 +151,7 @@ const AdminLogin = () => {
           </Paper>
         </motion.div>
       </Container>
-    </Box>
+    </Box></>
   );
 };
 

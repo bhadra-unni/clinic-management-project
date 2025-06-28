@@ -25,7 +25,7 @@ const drawerWidth = 240;
 const navItems = [
   { text: 'Dashboard', icon: <Dashboard />, link: '/doctor/dashboard' },
   { text: 'Appointments', icon: <CalendarToday />, link: '/doctor/appointments' },
-  { text: 'About Us', icon: <Info />, link: '/doctor/aboutus' },
+  { text: 'Prescriptions', icon: <Info />, link: '/doctor/prescriptions' },
 ];
 
 const DoctorDashboard = ({ children }) => {
@@ -40,7 +40,7 @@ const DoctorDashboard = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('doctorToken');
-    navigate('/doctor-login');
+    navigate('/doctor/login');
   };
 
   const drawerContent = (
