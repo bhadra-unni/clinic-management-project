@@ -1,160 +1,81 @@
-
-
-import React, { useState } from 'react';
+// src/pages/doctor/Appointment.jsx
+import React, { useEffect, useState } from 'react';
 import {
-  Box, Card, CardContent, Typography, TextField, Button, Divider, Stack, Paper, IconButton
+  Box, Typography, Table, TableHead, TableRow, TableCell,
+  TableBody, Button, Paper
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-const mockAppointments = [
-  {
-    id: 1,
-    patientName: 'Arjun ',
-    date: '2025-06-27',
-    specialization: 'Cardiology',
-    notes: '',
-    medicines: [
-      { name: '', dosage: '', frequency: '', duration: '', instructions: '' }
-    ]
-  },
-  {
-    id: 2,
-    patientName: 'Riya ',
-    date: '2025-06-26',
-    specialization: 'Neurology',
-    notes: '',
-    medicines: []
-  }
-];
 
 const Appointments = () => {
-  const [appointments, setAppointments] = useState(mockAppointments);
+  const [appointments, setAppointments] = useState([]);
 
-  const handleChange = (index, field, value, apptIndex) => {
-    const updatedAppointments = [...appointments];
-    updatedAppointments[apptIndex].medicines[index][field] = value;
-    setAppointments(updatedAppointments);
+  useEffect(() => {
+  const fetchAppointments = async () => {
+    const res = await axios.get(`/api/appointments/doctor/Dr. Sharma`);
+    setAppointments(res.data);
   };
+  fetchAppointments();
+}, []);
 
-  const handleNotesChange = (value, apptIndex) => {
-    const updatedAppointments = [...appointments];
-    updatedAppointments[apptIndex].notes = value;
-    setAppointments(updatedAppointments);
-  };
 
-  const addMedicine = (apptIndex) => {
-    const updatedAppointments = [...appointments];
-    updatedAppointments[apptIndex].medicines.push({
-      name: '', dosage: '', frequency: '', duration: '', instructions: ''
-    });
-    setAppointments(updatedAppointments);
-  };
+  const handleCancel = async (id) => {
+  try {
+    await axios.put(`/api/appointments/cancel/${id}`);
+    setAppointments(prev => prev.map(appt =>
+      appt._id === id ? { ...appt, status: 'Cancelled' } : appt
+    ));
+  } catch (err) {
+    console.error('Cancel failed:', err);
+  }
+};
 
-  const deleteMedicine = (index, apptIndex) => {
-    const updatedAppointments = [...appointments];
-    updatedAppointments[apptIndex].medicines.splice(index, 1);
-    setAppointments(updatedAppointments);
-  };
-
-  const savePrescription = (apptIndex) => {
-    const data = appointments[apptIndex];
-    console.log('Saving prescription:', data);
-    alert('Prescription saved for ' + data.patientName);
-  };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        Patient Appointments & Prescriptions
+    <Box sx={{ px: { xs: 1, sm: 2 }, py: 2 }}>
+      <Typography variant="h4" gutterBottom>
+        My Appointments
       </Typography>
 
-      {appointments.map((appt, apptIndex) => (
-        <Card key={appt.id} sx={{ mb: 4 }}>
-          <CardContent>
-            <Typography variant="h6">{appt.date} – Dr. Gayathri</Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              Patient: <strong>{appt.patientName}</strong> &nbsp; | &nbsp;
-              Specialization: <strong>{appt.specialization}</strong>
-            </Typography>
-
-            <Box mt={2}>
-              <Typography variant="subtitle2">Doctor Notes</Typography>
-              <TextField
-                fullWidth
-                multiline
-                rows={2}
-                value={appt.notes}
-                onChange={(e) => handleNotesChange(e.target.value, apptIndex)}
-                placeholder="notes"
-                sx={{ my: 1 }}
-              />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Typography variant="h6" sx={{ mb: 1 }}>Medicines</Typography>
-            {appt.medicines.map((med, index) => (
-              <Paper key={index} elevation={1} sx={{ p: 2, mb: 2 }}>
-                <Stack spacing={2}>
-                  <TextField
-                    label="Medicine Name"
-                    fullWidth
-                    value={med.name}
-                    onChange={(e) => handleChange(index, 'name', e.target.value, apptIndex)}
-                  />
-                  <TextField
-                    label="Dosage "
-                    fullWidth
-                    value={med.dosage}
-                    onChange={(e) => handleChange(index, 'dosage', e.target.value, apptIndex)}
-                  />
-                  <TextField
-                    label="Frequency "
-                    fullWidth
-                    value={med.frequency}
-                    onChange={(e) => handleChange(index, 'frequency', e.target.value, apptIndex)}
-                  />
-                  <TextField
-                    label="Duration "
-                    fullWidth
-                    value={med.duration}
-                    onChange={(e) => handleChange(index, 'duration', e.target.value, apptIndex)}
-                  />
-                  <TextField
-                    label="Instructions "
-                    fullWidth
-                    value={med.instructions}
-                    onChange={(e) => handleChange(index, 'instructions', e.target.value, apptIndex)}
-                  />
-                  <Box textAlign="right">
-                    <IconButton color="error" onClick={() => deleteMedicine(index, apptIndex)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Stack>
-              </Paper>
+      <Paper sx={{ overflowX: 'auto', borderRadius: 3 }}>
+        <Table>
+          <TableHead sx={{ backgroundColor: '#1976d2' }}>
+            <TableRow>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Patient</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {appointments.map((appt) => (
+              <TableRow key={appt.id}>
+                <TableCell>{appt.patient}</TableCell>
+                <TableCell>{appt.department}</TableCell>
+                <TableCell>{appt.date}</TableCell>
+                <TableCell sx={{ color: appt.status === 'Cancelled' ? 'red' : 'green' }}>
+                  {appt.status}
+                </TableCell>
+                <TableCell>
+                  {appt.status === 'Confirmed' ? (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => handleCancel(appt.id)}
+                    >
+                      Cancel
+                    </Button>
+                  ) : (
+                    <Typography variant="body2" color="textSecondary">
+                      —
+                    </Typography>
+                  )}
+                </TableCell>
+              </TableRow>
             ))}
-
-            <Button
-              variant="outlined"
-              onClick={() => addMedicine(apptIndex)}
-              sx={{ mt: 1 }}
-            >
-              + Add Medicine
-            </Button>
-
-            <Box mt={3}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => savePrescription(apptIndex)}
-              >
-                Save Prescription
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      ))}
+          </TableBody>
+        </Table>
+      </Paper>
     </Box>
   );
 };

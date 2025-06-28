@@ -28,6 +28,7 @@ import AboutUs from "./pages/auth/AboutUs";
 import DoctorDashboard from "./pages/doctors/DoctorDashboard";
 import DoctorHome from "./pages/doctors/DoctorHome";
 import Appointments from "./pages/doctors/Appointments";
+import Prescription from "./pages/doctors/Prescription";
 
 
 
@@ -58,7 +59,7 @@ function App() {
           {/* ✅ Doctors route */}
           <Route path="/doctor/dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
           <Route path="/doctor/appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
-          
+          <Route path="/doctor/prescriptions" element={<DoctorDashboard><Prescription/></DoctorDashboard>} />
 
 
           {/*Login pages route(auth)*/}

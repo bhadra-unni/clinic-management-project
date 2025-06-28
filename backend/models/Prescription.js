@@ -10,11 +10,18 @@ const medicineSchema = new mongoose.Schema({
 
 const prescriptionSchema = new mongoose.Schema({
   patientName: { type: String, required: true },
-  doctorName: { type: String, required: true },
-  department: String,
-  date: { type: Date, default: Date.now },
-  notes: String,
-  medicines: [medicineSchema],
-});
+  date: { type: Date, required: true }, // or use Date type if you prefer
+  specialization: { type: String, required: true },
+  notes: { type: String },
+  medicines: [
+    {
+      name: String,
+      dosage: String,
+      frequency: String,
+      duration: String,
+      instructions: String,
+    },
+  ],
+}, { timestamps: true });
 
 module.exports = mongoose.model('Prescription', prescriptionSchema);

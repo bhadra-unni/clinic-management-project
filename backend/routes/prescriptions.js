@@ -1,8 +1,9 @@
+// routes/prescriptions.js
 const express = require('express');
 const router = express.Router();
 const Prescription = require('../models/Prescription');
 
-// POST: Add a prescription (used by doctor)
+// ✅ Add prescription (doctor)
 router.post('/', async (req, res) => {
   try {
     const newPrescription = new Prescription(req.body);
@@ -13,11 +14,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET: Fetch prescriptions for a patient
+// ✅ Get prescriptions for a patient
 router.get('/', async (req, res) => {
   const { patientName } = req.query;
   try {
-    if (!patientName) return res.status(400).json({ message: 'Patient name is required' });
+    if (!patientName) {
+      return res.status(400).json({ message: 'Patient name is required' });
+    }
     const prescriptions = await Prescription.find({ patientName });
     res.json(prescriptions);
   } catch (err) {
