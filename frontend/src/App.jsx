@@ -22,12 +22,15 @@ import DoctorLogin from '/src/pages/auth/DoctorLogin.jsx';
 import AdminLogin from "./pages/auth/AdminLogin";
 import ContactUs from "./pages/auth/ContactUs";
 import HomePage from "./pages/auth/HomePage";
+import AboutUs from "./pages/auth/AboutUs";
 
 
 import DoctorDashboard from "./pages/doctors/DoctorDashboard";
 import DoctorHome from "./pages/doctors/DoctorHome";
 import Appointments from "./pages/doctors/Appointments";
-import AboutUs from "./pages/doctors/AboutUs";
+import Prescription from "./pages/doctors/Prescription";
+
+
 
 function App() {
   return (
@@ -56,7 +59,7 @@ function App() {
           {/* ✅ Doctors route */}
           <Route path="/doctor/dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
           <Route path="/doctor/appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
-          <Route path="/doctor/about" element={<DoctorDashboard><AboutUs /></DoctorDashboard>} />
+          <Route path="/doctor/prescriptions" element={<DoctorDashboard><Prescription/></DoctorDashboard>} />
 
 
           {/*Login pages route(auth)*/}
@@ -66,6 +69,7 @@ function App() {
       <Route path="/doctor/login" element={<DoctorLogin />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/contact" element={<ContactUs />} />
+      <Route path="/aboutus" element={<AboutUs />} />
 
         </Routes>
       </BrowserRouter>

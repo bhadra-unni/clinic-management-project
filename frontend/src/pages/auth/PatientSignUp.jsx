@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import doctorBg from "/src/assets/doctor.jpeg";
+import Navbar from "./Navbar";
 
 const PatientSignup = () => {
   const [form, setForm] = useState({
@@ -45,10 +46,10 @@ const PatientSignup = () => {
   };
 
   return (
-    <Box
+    <><Navbar /><Box
       sx={{
         minHeight: "100vh",
-        background:`url(${doctorBg}) center right / cover no-repeat`,
+        background: `url(${doctorBg}) center right / cover no-repeat`,
         display: "flex",
         alignItems: "center",
         justifyContent: { xs: "center", md: "flex-start" },
@@ -104,8 +105,7 @@ const PatientSignup = () => {
                 value={form.name}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="age"
                 label="Age"
@@ -113,16 +113,14 @@ const PatientSignup = () => {
                 onChange={handleChange}
                 required
                 type="number"
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="email"
                 label="Email"
                 value={form.email}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="password"
                 label="Password"
@@ -130,8 +128,7 @@ const PatientSignup = () => {
                 value={form.password}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="confirmPassword"
                 label="Confirm Password"
@@ -139,8 +136,7 @@ const PatientSignup = () => {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
 
               <FormControl component="fieldset" sx={{ mt: 1 }}>
                 <FormLabel component="legend" sx={{ mb: 1 }}>
@@ -194,7 +190,7 @@ const PatientSignup = () => {
           </Paper>
         </motion.div>
       </Container>
-    </Box>
+    </Box></>
   );
 };
 
