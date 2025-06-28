@@ -39,7 +39,7 @@ const PatientLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/');
+    navigate('/patient/login');
   };
 
   const drawerContent = (

@@ -13,6 +13,7 @@ import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
+import Navbar from './Navbar';
 
 const DoctorLogin = () => {
   const [email, setEmail] = useState('');
@@ -27,7 +28,7 @@ const DoctorLogin = () => {
   };
 
   return (
-    <Box
+    <><Navbar /><Box
       sx={{
         minHeight: '100vh',
         background: `url(${doctorBg}) center right / cover no-repeat`,
@@ -88,8 +89,7 @@ const DoctorLogin = () => {
                     </InputAdornment>
                   ),
                 }}
-                required
-              />
+                required />
 
               <TextField
                 fullWidth
@@ -116,8 +116,7 @@ const DoctorLogin = () => {
                     </InputAdornment>
                   ),
                 }}
-                required
-              />
+                required />
 
               <Button
                 type="submit"
@@ -139,7 +138,7 @@ const DoctorLogin = () => {
           </Paper>
         </motion.div>
       </Container>
-    </Box>
+    </Box></>
   );
 };
 
