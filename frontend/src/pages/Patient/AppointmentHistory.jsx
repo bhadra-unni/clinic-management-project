@@ -1,3 +1,4 @@
+// AppointmentHistory.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
@@ -42,12 +43,12 @@ const AppointmentHistory = () => {
     }
   };
 
-  // Updated logic: allow cancel only if appointment is >24 hours away
   const canCancelAppointment = (dateStr) => {
-    const appointmentDate = dayjs(dateStr);
-    const now = dayjs();
-    return appointmentDate.isAfter(now.add(24, 'hour'));
-  };
+  const appointmentDate = dayjs(dateStr, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']);
+  const now = dayjs();
+  return appointmentDate.isAfter(now.add(24, 'hour'));
+};
+
 
   return (
     <Box
@@ -118,7 +119,12 @@ const AppointmentHistory = () => {
                   <TableRow key={appt._id}>
                     <TableCell>{appt.doctor}</TableCell>
                     <TableCell>{appt.department}</TableCell>
-                    <TableCell>{dayjs(appt.date).format('DD MMM YYYY')}</TableCell>
+                    <TableCell>
+  {dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY'], true).isValid()
+    ? dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']).format('DD MMM YYYY')
+    : 'Invalid date'}
+</TableCell>
+
                     <TableCell>
                       <Typography color={
                         appt.status === 'Confirmed' ? 'green'

@@ -1,3 +1,4 @@
+// BookAppointment.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -13,7 +14,6 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import doctorImg from '../../assets/image.jpg';
-import { useNavigate } from 'react-router-dom';
 
 const BookAppointment = () => {
   const [departments, setDepartments] = useState([]);
@@ -23,20 +23,16 @@ const BookAppointment = () => {
   const [date, setDate] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
         const res = await fetch('http://localhost:3000/doctors');
         const data = await res.json();
-
         const grouped = {};
         data.forEach((doc) => {
           if (!grouped[doc.department]) grouped[doc.department] = [];
           grouped[doc.department].push(doc.name);
         });
-
         setDoctorsByDept(grouped);
         setDepartments(Object.keys(grouped));
       } catch (err) {
@@ -54,7 +50,7 @@ const BookAppointment = () => {
       const payload = {
         doctor,
         department,
-        date: dayjs(date).format('YYYY-MM-DD'),
+        date: dayjs(date).format('YYYY-MM-DD'), // ✅ Save in ISO format
         status: 'Confirmed',
         patientName: user?.name || 'Unknown',
       };
@@ -67,11 +63,10 @@ const BookAppointment = () => {
 
       if (!res.ok) throw new Error('Booking failed');
 
+      alert('Appointment successfully booked!');
       setDepartment('');
       setDoctor('');
       setDate(null);
-
-      navigate('/patient/history');
     } catch (err) {
       console.error('Booking error:', err.message);
       alert('Failed to book appointment. Try again.');
@@ -92,7 +87,7 @@ const BookAppointment = () => {
           justifyContent: 'center',
           alignItems: 'center',
           px: 2,
-          mt:-4,
+          mt: -4,
           '::before': {
             content: '""',
             position: 'absolute',
@@ -127,7 +122,9 @@ const BookAppointment = () => {
           </Typography>
 
           {/* Department Select */}
-          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>Select Department:</Typography>
+          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>
+            Select Department:
+          </Typography>
           <FormControl fullWidth margin="dense">
             <InputLabel>Department</InputLabel>
             <Select
@@ -139,13 +136,17 @@ const BookAppointment = () => {
               }}
             >
               {departments.map((dep) => (
-                <MenuItem key={dep} value={dep}>{dep}</MenuItem>
+                <MenuItem key={dep} value={dep}>
+                  {dep}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
 
           {/* Doctor Select */}
-          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>Select Doctor:</Typography>
+          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>
+            Select Doctor:
+          </Typography>
           <FormControl fullWidth margin="dense" disabled={!department}>
             <InputLabel>Doctor</InputLabel>
             <Select
@@ -154,19 +155,29 @@ const BookAppointment = () => {
               onChange={(e) => setDoctor(e.target.value)}
             >
               {(doctorsByDept[department] || []).map((doc) => (
-                <MenuItem key={doc} value={doc}>{doc}</MenuItem>
+                <MenuItem key={doc} value={doc}>
+                  {doc}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>
 
           {/* Date Picker */}
-          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>Select Date:</Typography>
+          <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>
+            Select Date:
+          </Typography>
           <DatePicker
             label="Choose Date"
             value={date}
             onChange={(newDate) => setDate(newDate)}
             disablePast
-            slotProps={{ textField: { fullWidth: true, margin: 'dense' } }}
+            format="DD/MM/YYYY"
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: 'dense',
+              },
+            }}
           />
 
           {/* Submit Button */}
