@@ -34,7 +34,7 @@ const DoctorLogin = () => {
         password,
       });
 
-      console.log(response.data);
+     
       setSuccess('Login successful!');
       setError('');
 
