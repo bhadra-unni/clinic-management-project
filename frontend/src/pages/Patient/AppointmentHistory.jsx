@@ -1,4 +1,3 @@
-// AppointmentHistory.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
@@ -44,11 +43,74 @@ const AppointmentHistory = () => {
   };
 
   const canCancelAppointment = (dateStr) => {
-  const appointmentDate = dayjs(dateStr, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']);
-  const now = dayjs();
-  return appointmentDate.isAfter(now.add(24, 'hour'));
-};
+    const appointmentDate = dayjs(dateStr, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']);
+    const now = dayjs();
+    return appointmentDate.isAfter(now.add(24, 'hour'));
+  };
 
+  const isPastAppointment = (dateStr) => {
+    const appointmentDate = dayjs(dateStr, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']);
+    return appointmentDate.isBefore(dayjs(), 'day');
+  };
+
+  const upcomingAppointments = appointments.filter(appt => !isPastAppointment(appt.date));
+  const pastAppointments = appointments.filter(appt => isPastAppointment(appt.date));
+
+  const renderTable = (data, title) => (
+    <Box sx={{ mt: 4 }}>
+      <Typography variant="h6" fontWeight="bold" gutterBottom>
+        {title}
+      </Typography>
+      <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
+        <Table>
+          <TableHead sx={{ backgroundColor: '#1976d2' }}>
+            <TableRow>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Doctor</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((appt) => (
+              <TableRow key={appt._id}>
+                <TableCell>{appt.doctor}</TableCell>
+                <TableCell>{appt.department}</TableCell>
+                <TableCell>
+                  {dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY'], true).isValid()
+                    ? dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']).format('DD MMM YYYY')
+                    : 'Invalid date'}
+                </TableCell>
+                <TableCell>
+                  <Typography color={
+                    appt.status === 'Confirmed' ? 'green'
+                      : appt.status === 'Pending' ? 'orange'
+                      : 'red'
+                  }>
+                    {appt.status}
+                  </Typography>
+                </TableCell>
+                <TableCell>
+                  {appt.status === 'Confirmed' && !isPastAppointment(appt.date) && canCancelAppointment(appt.date) && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      onClick={() => handleCancel(appt._id)}
+                      sx={{ transition: '0.3s', '&:hover': { transform: 'scale(1.05)' } }}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
 
   return (
     <Box
@@ -87,7 +149,13 @@ const AppointmentHistory = () => {
           boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
         }}
       >
-        <Typography variant="h5" fontWeight="bold" textAlign="center" gutterBottom>
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          textAlign="center"
+          gutterBottom
+          sx={{ color: '#1976d2' }}
+        >
           Appointment History
         </Typography>
 
@@ -103,55 +171,10 @@ const AppointmentHistory = () => {
             </Typography>
           </Box>
         ) : (
-          <TableContainer component={Paper} sx={{ mt: 2, borderRadius: 3 }}>
-            <Table>
-              <TableHead sx={{ backgroundColor: '#1976d2' }}>
-                <TableRow>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Doctor</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
-                  <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {appointments.map((appt) => (
-                  <TableRow key={appt._id}>
-                    <TableCell>{appt.doctor}</TableCell>
-                    <TableCell>{appt.department}</TableCell>
-                    <TableCell>
-  {dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY'], true).isValid()
-    ? dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']).format('DD MMM YYYY')
-    : 'Invalid date'}
-</TableCell>
-
-                    <TableCell>
-                      <Typography color={
-                        appt.status === 'Confirmed' ? 'green'
-                          : appt.status === 'Pending' ? 'orange'
-                          : 'red'
-                      }>
-                        {appt.status}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {appt.status === 'Confirmed' && canCancelAppointment(appt.date) && (
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
-                          onClick={() => handleCancel(appt._id)}
-                          sx={{ transition: '0.3s', '&:hover': { transform: 'scale(1.05)' } }}
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <>
+            {upcomingAppointments.length > 0 && renderTable(upcomingAppointments, 'Upcoming Appointments')}
+            {pastAppointments.length > 0 && renderTable(pastAppointments, 'Past Appointments')}
+          </>
         )}
       </Box>
     </Box>
