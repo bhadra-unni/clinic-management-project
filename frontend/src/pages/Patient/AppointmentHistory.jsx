@@ -115,7 +115,7 @@ const AppointmentHistory = () => {
   return (
     <Box
       sx={{
-        pt: 8,
+        pt: 5,
         minHeight: '100vh',
         position: 'relative',
         overflow: 'hidden',
@@ -154,7 +154,7 @@ const AppointmentHistory = () => {
           fontWeight="bold"
           textAlign="center"
           gutterBottom
-          sx={{ color: '#1976d2' }}
+          color='primary'
         >
           Appointment History
         </Typography>

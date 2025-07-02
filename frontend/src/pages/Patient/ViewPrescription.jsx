@@ -66,7 +66,7 @@ const ViewPrescription = () => {
           width: '100%',
         }}
       >
-        <Typography variant="h5" fontWeight="bold" gutterBottom color="primary">
+        <Typography variant="h4" fontWeight="bold" textAlign='center' gutterBottom color="primary">
           Your Prescriptions
         </Typography>
 

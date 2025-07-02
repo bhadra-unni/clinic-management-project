@@ -10,6 +10,8 @@ import {
   Select,
   Button,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
@@ -18,10 +20,15 @@ import doctorImg from '../../assets/image.jpg';
 const BookAppointment = () => {
   const [departments, setDepartments] = useState([]);
   const [doctorsByDept, setDoctorsByDept] = useState({});
-  const [doctor, setDoctor] = useState('');
+  const [doctor, setDoctor] = useState(null);
   const [department, setDepartment] = useState('');
   const [date, setDate] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -31,7 +38,7 @@ const BookAppointment = () => {
         const grouped = {};
         data.forEach((doc) => {
           if (!grouped[doc.department]) grouped[doc.department] = [];
-          grouped[doc.department].push(doc.name);
+          grouped[doc.department].push(doc); // store full doctor object
         });
         setDoctorsByDept(grouped);
         setDepartments(Object.keys(grouped));
@@ -48,9 +55,9 @@ const BookAppointment = () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       const payload = {
-        doctor,
+        doctor: doctor?.name,
         department,
-        date: dayjs(date).format('YYYY-MM-DD'), // ✅ Save in ISO format
+        date: dayjs(date).format('YYYY-MM-DD'),
         status: 'Confirmed',
         patientName: user?.name || 'Unknown',
       };
@@ -63,13 +70,18 @@ const BookAppointment = () => {
 
       if (!res.ok) throw new Error('Booking failed');
 
-      alert('Appointment successfully booked!');
+      setSnackbarMessage('Appointment successfully booked!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+
       setDepartment('');
-      setDoctor('');
+      setDoctor(null);
       setDate(null);
     } catch (err) {
       console.error('Booking error:', err.message);
-      alert('Failed to book appointment. Try again.');
+      setSnackbarMessage('Failed to book appointment. Try again.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     } finally {
       setLoading(false);
     }
@@ -79,7 +91,7 @@ const BookAppointment = () => {
     <Box sx={{ width: '100%' }}>
       <Box
         sx={{
-          pt: 4,
+          pt: 1,
           minHeight: '100vh',
           position: 'relative',
           overflow: 'hidden',
@@ -117,7 +129,7 @@ const BookAppointment = () => {
             boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
           }}
         >
-          <Typography variant="h5" fontWeight="bold" align="center" gutterBottom>
+          <Typography variant="h4" fontWeight="bold" align="center" color='primary' gutterBottom>
             Book Appointment
           </Typography>
 
@@ -132,7 +144,7 @@ const BookAppointment = () => {
               label="Department"
               onChange={(e) => {
                 setDepartment(e.target.value);
-                setDoctor('');
+                setDoctor(null);
               }}
             >
               {departments.map((dep) => (
@@ -150,17 +162,25 @@ const BookAppointment = () => {
           <FormControl fullWidth margin="dense" disabled={!department}>
             <InputLabel>Doctor</InputLabel>
             <Select
-              value={doctor}
+              value={doctor?.name || ''}
               label="Doctor"
-              onChange={(e) => setDoctor(e.target.value)}
+              onChange={(e) => {
+                const selected = doctorsByDept[department]?.find(
+                  (d) => d.name === e.target.value
+                );
+                setDoctor(selected);
+              }}
             >
               {(doctorsByDept[department] || []).map((doc) => (
-                <MenuItem key={doc} value={doc}>
-                  {doc}
+                <MenuItem key={doc.name} value={doc.name}>
+                  {doc.name}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+
+          {/* Display Doctor Fees */}
+          
 
           {/* Date Picker */}
           <Typography variant="body2" fontWeight="bold" sx={{ mt: 2, mb: 0.5 }}>
@@ -179,19 +199,67 @@ const BookAppointment = () => {
               },
             }}
           />
+          {doctor && (
+            <Box
+              sx={{
+                mt: 2,
+                p: 1,
+                border: '1px dashed #ccc',
+                borderRadius: 2,
+                backgroundColor: '#f9f9f9',
+                textAlign: 'center',
+              }}
+            >
+              <Typography variant="subtitle2">Consultation Fee</Typography>
+              <Typography variant="h6" color="primary">
+                ₹{doctor.fees}
+              </Typography>
+            </Box>
+          )}
 
           {/* Submit Button */}
           <Box mt={4} textAlign="center">
             <Button
               variant="contained"
+              sx={{
+                borderRadius: 8,
+                px: 4,
+                py: 1,
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#1976d2',
+                },
+              }}
               disabled={!department || !doctor || !date || loading}
               onClick={handleSubmit}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Confirm Appointment'}
             </Button>
+
+            <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
+              You need to pay the consultation fee when you meet the doctor. Appointments can be
+              cancelled up to 24 hours in advance.
+            </Typography>
           </Box>
         </Paper>
       </Box>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
