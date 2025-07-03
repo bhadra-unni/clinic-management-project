@@ -75,7 +75,7 @@ const Dashboard = () => {
           justifyContent: 'flex-start',
           px: { xs: 3, md: 10 },
           pb: { xs: 10, md: 12 },
-          minHeight: '100vh',
+          minHeight: `calc(100vh - ${navbarHeight}px)`,
           backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0) 100%), url(${doctorImg})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',

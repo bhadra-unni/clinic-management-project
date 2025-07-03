@@ -236,9 +236,8 @@ const BookAppointment = () => {
               {loading ? <CircularProgress size={24} color="inherit" /> : 'Confirm Appointment'}
             </Button>
 
-            <Typography variant="caption" display="block" sx={{ mt: 2, color: 'text.secondary' }}>
-              You need to pay the consultation fee when you meet the doctor. Appointments can be
-              cancelled up to 24 hours in advance.
+            <Typography variant="caption" display="block" sx={{ mt: 2, color: 'red' }}>
+              Note: You will need to pay the consultation fee during your visit.<br />Appointments can be cancelled up to 24 hours before the scheduled time.
             </Typography>
           </Box>
         </Paper>
