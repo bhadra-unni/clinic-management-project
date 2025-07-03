@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableHead, TableRow, TableCell,
-  TableBody, Button, Paper
+  TableBody, Button, Paper, Snackbar, Alert
 } from '@mui/material';
-import axios from 'axios'; // ✅ required
+import dayjs from 'dayjs';
+import axios from 'axios';
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const doctorId = localStorage.getItem('doctorId'); // ✅ get doctorId from login
+      const doctorId = localStorage.getItem('doctorId');
       if (!doctorId) return console.warn("No doctorId in localStorage");
 
       try {
-        // 🔍 Fetch the doctor details to get the name
         const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
         const doctorName = doctorRes.data.name;
 
-        // 🗓 Fetch appointments for that doctor
         const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
         setAppointments(apptRes.data);
       } catch (err) {
@@ -31,12 +35,19 @@ const Appointments = () => {
 
   const handleCancel = async (id) => {
     try {
-      await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
-      setAppointments(prev => prev.map(appt =>
-        appt._id === id ? { ...appt, status: 'Cancelled' } : appt
-      ));
+      const res = await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
+      setAppointments(prev =>
+        prev.map(appt =>
+          appt._id === id ? { ...appt, status: 'Cancelled' } : appt
+        )
+      );
+      setSnackbar({ open: true, message: res.data.message, severity: 'success' });
     } catch (err) {
-      console.error('Cancel failed:', err);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.error || 'Failed to cancel appointment',
+        severity: 'error',
+      });
     }
   };
 
@@ -62,7 +73,11 @@ const Appointments = () => {
               <TableRow key={appt._id}>
                 <TableCell>{appt.patientName}</TableCell>
                 <TableCell>{appt.department}</TableCell>
-                <TableCell>{appt.date}</TableCell>
+                <TableCell>
+                  {dayjs(appt.date).isValid()
+                    ? dayjs(appt.date).format('DD-MM-YYYY')
+                    : 'Invalid date'}
+                </TableCell>
                 <TableCell sx={{ color: appt.status === 'Cancelled' ? 'red' : 'green' }}>
                   {appt.status}
                 </TableCell>
@@ -87,6 +102,22 @@ const Appointments = () => {
           </TableBody>
         </Table>
       </Paper>
+
+      {/* Snackbar for cancel success/error */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

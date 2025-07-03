@@ -11,8 +11,10 @@ import {
   TableBody,
   Chip,
   IconButton,
+  Snackbar,
+  Alert,
 } from '@mui/material';
-import { Edit, Cancel } from '@mui/icons-material';
+import { Cancel } from '@mui/icons-material';
 import AdminLayout from '../admin/AdminLayout';
 import axios from 'axios';
 
@@ -24,6 +26,7 @@ const statusColors = {
 
 const AppointmentDetails = () => {
   const [appointments, setAppointments] = useState([]);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     fetchAppointments();
@@ -31,21 +34,91 @@ const AppointmentDetails = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/appointments'); // your API endpoint
+      const response = await axios.get('http://localhost:3000/appointments');
       setAppointments(response.data);
     } catch (error) {
       console.error('Failed to fetch appointments', error);
+      setSnackbar({ open: true, message: 'Failed to fetch appointments', severity: 'error' });
     }
   };
 
   const handleCancel = async (id) => {
     try {
-      await axios.put(`http://localhost:3000/appointments/${id}/cancel`);
+      await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
+      setSnackbar({ open: true, message: 'Appointment cancelled successfully', severity: 'success' });
       fetchAppointments();
     } catch (error) {
       console.error('Error cancelling appointment:', error);
+      setSnackbar({ open: true, message: 'Failed to cancel appointment', severity: 'error' });
     }
   };
+
+  const now = Date.now();
+
+  // Separate upcoming and past appointments
+  const upcomingAppointments = appointments.filter(
+    (appt) => new Date(appt.date).getTime() >= now
+  );
+
+  const pastAppointments = appointments.filter(
+    (appt) => new Date(appt.date).getTime() < now
+  );
+
+  const renderTable = (title, data) => (
+    <Box sx={{ mt: 4 }}>
+      <Typography variant="h6" gutterBottom>
+        {title}
+      </Typography>
+      <Paper sx={{ overflowX: 'auto' }}>
+        <Table>
+          <TableHead sx={{ backgroundColor: '#1976d2' }}>
+            <TableRow>
+              <TableCell sx={{ color: 'white' }}>ID</TableCell>
+              <TableCell sx={{ color: 'white' }}>Patient Name</TableCell>
+              <TableCell sx={{ color: 'white' }}>Doctor Name</TableCell>
+              <TableCell sx={{ color: 'white' }}>Department</TableCell>
+              <TableCell sx={{ color: 'white' }}>Date</TableCell>
+              <TableCell sx={{ color: 'white' }}>Status</TableCell>
+              <TableCell sx={{ color: 'white' }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.length > 0 ? (
+              data.map((appt) => (
+                <TableRow key={appt._id}>
+                  <TableCell>{appt._id}</TableCell>
+                  <TableCell>{appt.patientName}</TableCell>
+                  <TableCell>{appt.doctor}</TableCell>
+                  <TableCell>{appt.department}</TableCell>
+                  <TableCell>{new Date(appt.date).toLocaleDateString('en-GB')}</TableCell>
+                  <TableCell>
+                    <Chip label={appt.status} color={statusColors[appt.status] || 'default'} />
+                  </TableCell>
+                  <TableCell>
+                    {appt.status !== 'Cancelled' && (
+                      <IconButton
+                        color="error"
+                        onClick={() => handleCancel(appt._id)}
+                        disabled={new Date(appt.date).getTime() - Date.now() <= 24 * 60 * 60 * 1000}
+                      >
+                        <Cancel />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No appointments found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Paper>
+    </Box>
+  );
 
   return (
     <AdminLayout>
@@ -54,50 +127,23 @@ const AppointmentDetails = () => {
           Appointment Details
         </Typography>
 
-        <Paper sx={{ overflowX: 'auto' }}>
-          <Table>
-            <TableHead sx={{ backgroundColor: '#1976d2' }}>
-              <TableRow>
-                <TableCell sx={{ color: 'white' }}>ID</TableCell>
-                <TableCell sx={{ color: 'white' }}>Patient Name</TableCell>
-                <TableCell sx={{ color: 'white' }}>Doctor Name</TableCell>
-                <TableCell sx={{ color: 'white' }}>Department</TableCell>
-                <TableCell sx={{ color: 'white' }}>Date</TableCell>
-                <TableCell sx={{ color: 'white' }}>Status</TableCell>
-                <TableCell sx={{ color: 'white' }}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {appointments.length > 0 ? (
-                appointments.map((appt) => (
-                  <TableRow key={appt._id}>
-                    <TableCell>{appt._id}</TableCell>
-                    <TableCell>{appt.patientName}</TableCell>
-                    <TableCell>{appt.doctor}</TableCell>
-                    <TableCell>{appt.department}</TableCell>
-                    <TableCell>{appt.date}</TableCell>
-                    <TableCell>
-                      <Chip label={appt.status} color={statusColors[appt.status] || 'default'} />
-                    </TableCell>
-                    <TableCell>
-                      {appt.status !== 'Cancelled' && (
-                        <IconButton color="error" onClick={() => handleCancel(appt.id)}>
-                          <Cancel />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    No appointments found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Paper>
+        {renderTable('Upcoming Appointments', upcomingAppointments)}
+        {renderTable('Past Appointments', pastAppointments)}
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={4000}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={() => setSnackbar({ ...snackbar, open: false })}
+            severity={snackbar.severity}
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Box>
     </AdminLayout>
   );

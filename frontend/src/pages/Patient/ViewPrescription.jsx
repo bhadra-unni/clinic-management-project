@@ -81,7 +81,7 @@ const ViewPrescription = () => {
         ) : (
           prescriptions.map((prescription, index) => (
             <Accordion
-              key={prescription.id}
+              key={prescription._id}
               sx={{
                 mb: 2,
                 borderRadius: 2,
@@ -103,7 +103,7 @@ const ViewPrescription = () => {
                       {index + 1}. {format(new Date(prescription.date), 'dd MMM yyyy')} – {prescription.doctorName}
                     </Typography>
                     <Typography fontSize="0.85rem" color="text.secondary">
-                      {prescription.department}
+                      {prescription.specialization}
                     </Typography>
                   </Box>
                 </Stack>
@@ -115,7 +115,7 @@ const ViewPrescription = () => {
                   </Avatar>
                   <Typography fontWeight="medium">{prescription.doctorName}</Typography>
                   <Chip
-                    label={prescription.department}
+                    label={prescription.specialization}
                     color="info"
                     variant="outlined"
                     sx={{ ml: 'auto' }}

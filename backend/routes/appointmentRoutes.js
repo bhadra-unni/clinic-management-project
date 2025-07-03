@@ -53,7 +53,7 @@ router.get('/patient/:name', async (req, res) => {
   }
 });
 
-// ✅ Cancel an appointment (by doctor or patient)
+// ✅ Cancel an appointment (admin/patient/doctor)
 router.put('/cancel/:id', async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
@@ -66,25 +66,27 @@ router.put('/cancel/:id', async (req, res) => {
       return res.status(400).json({ error: 'Appointment is already cancelled' });
     }
 
-    const appointmentDate = new Date(appointment.date);
-    const now = new Date();
-    const diffInMs = appointmentDate - now;
-    const diffInHours = diffInMs / (1000 * 60 * 60);
+    const appointmentTime = new Date(appointment.date);
+    const currentTime = new Date();
 
-    if (diffInHours < 24) {
+    const timeDifference = appointmentTime.getTime() - currentTime.getTime(); // in milliseconds
+
+    if (timeDifference <= 24 * 60 * 60 * 1000) {
       return res.status(400).json({
         error: 'Appointments can only be cancelled at least 24 hours in advance',
       });
     }
 
     appointment.status = 'Cancelled';
+    appointment.cancelledAt = new Date(); // (Optional) Track cancellation time
     await appointment.save();
 
-    res.json({ message: 'Appointment cancelled successfully' });
+    res.status(200).json({ message: 'Appointment cancelled successfully' });
   } catch (err) {
     console.error('Cancel error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 module.exports = router;

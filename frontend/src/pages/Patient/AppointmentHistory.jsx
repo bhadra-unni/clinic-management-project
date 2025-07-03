@@ -82,9 +82,10 @@ useEffect(() => {
                 <TableCell>{appt.doctor}</TableCell>
                 <TableCell>{appt.department}</TableCell>
                 <TableCell>
-                  {dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY'], true).isValid()
-                    ? dayjs(appt.date, ['YYYY-MM-DD', 'DD/MM/YYYY', 'MM-DD-YYYY']).format('DD MMM YYYY')
-                    : 'Invalid date'}
+                  {dayjs(appt.date).isValid()
+  ? dayjs(appt.date).format('DD-MM-YYYY')
+  : 'Invalid date'
+}
                 </TableCell>
                 <TableCell>
                   <Typography color={

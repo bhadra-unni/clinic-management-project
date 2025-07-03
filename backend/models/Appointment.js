@@ -1,4 +1,3 @@
-// models/Appointment.js
 const mongoose = require('mongoose');
 
 const appointmentSchema = new mongoose.Schema({
@@ -15,14 +14,18 @@ const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String, // You can change to Date type if needed
+    type: Date, 
     required: true,
   },
   status: {
     type: String,
     enum: ['Confirmed', 'Cancelled'],
     default: 'Confirmed',
-  }
-}, { timestamps: true }); // Adds createdAt, updatedAt
+  },
+  cancelledAt: {
+    type: Date, // ✅ Optional timestamp when appointment was cancelled
+    default: null,
+  },
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('Appointment', appointmentSchema);
