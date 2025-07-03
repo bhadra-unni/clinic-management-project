@@ -1,8 +1,9 @@
+// routes/appointments.js
 const express = require('express');
 const router = express.Router();
 const Appointment = require('../models/Appointment');
 
-// Book appointment
+// ✅ Book an appointment (by patient)
 router.post('/', async (req, res) => {
   try {
     const { doctor, department, date, patientName } = req.body;
@@ -10,7 +11,7 @@ router.post('/', async (req, res) => {
     const newAppt = new Appointment({
       doctor,
       department,
-      date, // Expected format: 'YYYY-MM-DD'
+      date,
       patientName,
       status: 'Confirmed',
     });
@@ -22,7 +23,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get all appointments
+// ✅ Get all appointments (optional admin route)
 router.get('/', async (req, res) => {
   try {
     const appointments = await Appointment.find().sort({ date: 1 });
@@ -32,7 +33,27 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Cancel appointment (only if at least 24 hours before)
+// ✅ Get appointments for a doctor
+router.get('/doctor/:name', async (req, res) => {
+  try {
+    const doctorAppointments = await Appointment.find({ doctor: req.params.name }).sort({ date: 1 });
+    res.json(doctorAppointments);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch doctor appointments' });
+  }
+});
+
+// ✅ Get appointments for a patient
+router.get('/patient/:name', async (req, res) => {
+  try {
+    const patientAppointments = await Appointment.find({ patientName: req.params.name }).sort({ date: 1 });
+    res.json(patientAppointments);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch patient appointments' });
+  }
+});
+
+// ✅ Cancel an appointment (admin/patient/doctor)
 router.put('/cancel/:id', async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
@@ -45,27 +66,27 @@ router.put('/cancel/:id', async (req, res) => {
       return res.status(400).json({ error: 'Appointment is already cancelled' });
     }
 
-    // Compare with current time
-    const appointmentDate = new Date(appointment.date); // appointment.date is in YYYY-MM-DD
-    const now = new Date();
+    const appointmentTime = new Date(appointment.date);
+    const currentTime = new Date();
 
-    const diffInMs = appointmentDate - now;
-    const diffInHours = diffInMs / (1000 * 60 * 60);
+    const timeDifference = appointmentTime.getTime() - currentTime.getTime(); // in milliseconds
 
-    if (diffInHours < 24) {
+    if (timeDifference <= 24 * 60 * 60 * 1000) {
       return res.status(400).json({
-        error: 'Appointments can only be cancelled at least 1 day (24 hours) in advance',
+        error: 'Appointments can only be cancelled at least 24 hours in advance',
       });
     }
 
     appointment.status = 'Cancelled';
+    appointment.cancelledAt = new Date(); // (Optional) Track cancellation time
     await appointment.save();
 
-    res.json({ message: 'Appointment cancelled successfully' });
+    res.status(200).json({ message: 'Appointment cancelled successfully' });
   } catch (err) {
     console.error('Cancel error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 module.exports = router;

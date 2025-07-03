@@ -15,10 +15,8 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { Logout } from '@mui/icons-material';
 import doctorImg from '../../assets/image.jpg';
 
-// TODO: Replace with actual user data from context/auth
-const user = {
-  name: '', // <-- dynamically set user's name
-};
+const user = JSON.parse(localStorage.getItem('user')) || {};
+
 
 const features = [
   {
@@ -68,22 +66,23 @@ const Dashboard = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          pt: `${navbarHeight}px`,
+          
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
+          pt: `calc(${navbarHeight}px + 120px)`,
           justifyContent: 'flex-start',
           px: { xs: 3, md: 10 },
           pb: { xs: 10, md: 12 },
-          minHeight: '100vh',
+          minHeight: `calc(100vh - ${navbarHeight}px)`,
           backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0) 100%), url(${doctorImg})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
-          backgroundPosition: 'top center',
+          backgroundPosition: 'center top',
           width: '100%',
         }}
       >
-        <Box sx={{ maxWidth: 600 }}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
+        <Box sx={{ maxWidth: 600,mt:6 }}>
+          <Typography variant="h3" fontWeight="bold" gutterBottom>
             Welcome back{user.name ? `, ${user.name}` : ''} 👋
           </Typography>
           <Typography variant="h5" fontWeight="medium" gutterBottom>

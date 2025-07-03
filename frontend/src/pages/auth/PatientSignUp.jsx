@@ -15,6 +15,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import doctorBg from "/src/assets/doctor.jpeg";
+import Navbar from "./Navbar";
 
 const PatientSignup = () => {
   const [form, setForm] = useState({
@@ -32,23 +33,37 @@ const PatientSignup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match. Please try again.");
-      return;
-    }
-    alert(
-     `Patient registered:\nName: ${form.name}\nAge: ${form.age}\nEmail: ${form.email}\nGender: ${form.gender}`
-    );
+const handleSignup = async (e) => {
+  e.preventDefault();
+
+  if (form.password !== form.confirmPassword) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:3000/patients/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+    alert("Signup successful. Please log in.");
     navigate("/patient/login");
-  };
+  } catch (err) {
+    alert("Signup failed: " + err.message);
+  }
+};
+
 
   return (
-    <Box
+    <><Navbar /><Box
       sx={{
         minHeight: "100vh",
-        background:`url(${doctorBg}) center right / cover no-repeat`,
+        background: `url(${doctorBg}) center right / cover no-repeat`,
         display: "flex",
         alignItems: "center",
         justifyContent: { xs: "center", md: "flex-start" },
@@ -104,8 +119,7 @@ const PatientSignup = () => {
                 value={form.name}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="age"
                 label="Age"
@@ -113,16 +127,14 @@ const PatientSignup = () => {
                 onChange={handleChange}
                 required
                 type="number"
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="email"
                 label="Email"
                 value={form.email}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="password"
                 label="Password"
@@ -130,8 +142,7 @@ const PatientSignup = () => {
                 value={form.password}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
               <TextField
                 name="confirmPassword"
                 label="Confirm Password"
@@ -139,8 +150,7 @@ const PatientSignup = () => {
                 value={form.confirmPassword}
                 onChange={handleChange}
                 required
-                fullWidth
-              />
+                fullWidth />
 
               <FormControl component="fieldset" sx={{ mt: 1 }}>
                 <FormLabel component="legend" sx={{ mb: 1 }}>
@@ -194,7 +204,7 @@ const PatientSignup = () => {
           </Paper>
         </motion.div>
       </Container>
-    </Box>
+    </Box></>
   );
 };
 

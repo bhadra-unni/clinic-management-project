@@ -13,12 +13,11 @@ const ViewPrescription = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const currentPatient = localStorage.getItem('patientName');
-
   useEffect(() => {
     const fetchPrescriptions = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/prescriptions/${currentPatient}`);
+        const user = JSON.parse(localStorage.getItem('user'));
+        const res = await fetch(`http://localhost:3000/prescriptions?patientName=${user?.name}`);
         const data = await res.json();
         setPrescriptions(data);
       } catch (err) {
@@ -29,7 +28,7 @@ const ViewPrescription = () => {
     };
 
     fetchPrescriptions();
-  }, [currentPatient]);
+  }, []);
 
   return (
     <Box
@@ -67,14 +66,18 @@ const ViewPrescription = () => {
           width: '100%',
         }}
       >
-        <Typography variant="h5" fontWeight="bold" gutterBottom color="primary">
+        <Typography variant="h4" fontWeight="bold" textAlign='center' gutterBottom color="primary">
           Your Prescriptions
         </Typography>
 
         {loading ? (
-          <CircularProgress />
+          <Box textAlign="center" py={5}>
+            <CircularProgress />
+          </Box>
         ) : prescriptions.length === 0 ? (
-          <Typography>No prescriptions found.</Typography>
+          <Typography textAlign="center" color="text.secondary">
+            No prescriptions found.
+          </Typography>
         ) : (
           prescriptions.map((prescription, index) => (
             <Accordion
@@ -89,7 +92,7 @@ const ViewPrescription = () => {
                   boxShadow: 6,
                   transform: 'scale(1.01)',
                 },
-                '&:before': { display: 'none' },
+                '&:before': { display: 'none' }
               }}
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -100,7 +103,7 @@ const ViewPrescription = () => {
                       {index + 1}. {format(new Date(prescription.date), 'dd MMM yyyy')} – {prescription.doctorName}
                     </Typography>
                     <Typography fontSize="0.85rem" color="text.secondary">
-                      {prescription.department}
+                      {prescription.specialization}
                     </Typography>
                   </Box>
                 </Stack>
@@ -108,11 +111,11 @@ const ViewPrescription = () => {
               <AccordionDetails>
                 <Stack direction="row" spacing={2} alignItems="center" mb={2}>
                   <Avatar sx={{ bgcolor: 'primary.main' }}>
-                    {prescription.doctorName.charAt(0)}
+                    {prescription.doctorName?.charAt(0)}
                   </Avatar>
                   <Typography fontWeight="medium">{prescription.doctorName}</Typography>
                   <Chip
-                    label={prescription.department}
+                    label={prescription.specialization}
                     color="info"
                     variant="outlined"
                     sx={{ ml: 'auto' }}

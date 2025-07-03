@@ -13,6 +13,7 @@ import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
+import Navbar from './Navbar';
 
 const PatientLogin = () => {
   const [email, setEmail] = useState('');
@@ -20,14 +21,31 @@ const PatientLogin = () => {
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    alert(`Logged in as ${email}`);
-    navigate('/patient'); // redirect after login
-  };
+const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch("http://localhost:3000/patients/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.patient));
+    navigate("/patient/dashboard");
+  } catch (err) {
+    alert("Login failed: " + err.message);
+  }
+};
+
 
   return (
-    <Box
+    <><Navbar /><Box
       sx={{
         minHeight: '100vh',
         background: `url(${doctorBg}) center right / cover no-repeat`,
@@ -88,8 +106,7 @@ const PatientLogin = () => {
                     </InputAdornment>
                   ),
                 }}
-                required
-              />
+                required />
 
               <TextField
                 fullWidth
@@ -116,8 +133,7 @@ const PatientLogin = () => {
                     </InputAdornment>
                   ),
                 }}
-                required
-              />
+                required />
 
               <Button
                 type="submit"
@@ -158,7 +174,7 @@ const PatientLogin = () => {
           </Paper>
         </motion.div>
       </Container>
-    </Box>
+    </Box></>
   );
 };
 

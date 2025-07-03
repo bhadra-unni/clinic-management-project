@@ -31,7 +31,7 @@ const PatientLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isDashboard = location.pathname === '/patient';
+  const isDashboard = location.pathname === '/patient/dashboard';
 
   const toggleDrawer = () => {
     setMobileOpen(!mobileOpen);
@@ -39,12 +39,12 @@ const PatientLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/login');
+    navigate('/patient/login');
   };
 
   const drawerContent = (
     <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2, color: '#1976d2', fontWeight: 'bold' }}>
+      <Typography variant="h6" fontWeight="bold" sx={{ my: 2, color: '#1976d2'}}>
         ClinicCare+
       </Typography>
       <Divider sx={{ backgroundColor: '#1976d2' }} />
