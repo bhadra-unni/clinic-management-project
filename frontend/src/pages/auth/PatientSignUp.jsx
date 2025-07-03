@@ -33,17 +33,31 @@ const PatientSignup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match. Please try again.");
-      return;
-    }
-    alert(
-     `Patient registered:\nName: ${form.name}\nAge: ${form.age}\nEmail: ${form.email}\nGender: ${form.gender}`
-    );
+const handleSignup = async (e) => {
+  e.preventDefault();
+
+  if (form.password !== form.confirmPassword) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:3000/patients/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+    alert("Signup successful. Please log in.");
     navigate("/patient/login");
-  };
+  } catch (err) {
+    alert("Signup failed: " + err.message);
+  }
+};
+
 
   return (
     <><Navbar /><Box

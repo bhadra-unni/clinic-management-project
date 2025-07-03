@@ -10,21 +10,25 @@ const AppointmentHistory = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const res = await fetch('http://localhost:3000/appointments');
-        const data = await res.json();
-        setAppointments(data);
-      } catch (err) {
-        console.error('Failed to fetch appointments:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchAppointments = async () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user?.name) return;
 
-    fetchAppointments();
-  }, []);
+    try {
+      const res = await fetch(`http://localhost:3000/appointments/patient/${encodeURIComponent(user.name)}`);
+      const data = await res.json();
+      setAppointments(data);
+    } catch (err) {
+      console.error('Failed to fetch appointments:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAppointments();
+}, []);
+
 
   const handleCancel = async (_id) => {
     try {

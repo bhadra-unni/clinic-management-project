@@ -11,13 +11,19 @@ import AdminLayout from './AdminLayout';
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
 
-  useEffect(() => {
-    // Mock data instead of API call
-    const mockPatients = [
-      { _id: '1', name: 'Alice Brown', age: 30, email: 'alice@example.com' },
-    ];
-    setPatients(mockPatients);
-  }, []);
+ useEffect(() => {
+  const fetchPatients = async () => {
+    try {
+      const res = await fetch('http://localhost:3000/patients');
+      const data = await res.json();
+      setPatients(data);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    }
+  };
+
+  fetchPatients();
+}, []);
 
   return (
    <AdminLayout>

@@ -21,11 +21,28 @@ const PatientLogin = () => {
   const [showPass, setShowPass] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    alert(`Logged in as ${email}`);
-    navigate('/patient/dashboard'); // redirect after login
-  };
+const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch("http://localhost:3000/patients/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.patient));
+    navigate("/patient/dashboard");
+  } catch (err) {
+    alert("Login failed: " + err.message);
+  }
+};
+
 
   return (
     <><Navbar /><Box

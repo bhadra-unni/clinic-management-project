@@ -15,10 +15,8 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { Logout } from '@mui/icons-material';
 import doctorImg from '../../assets/image.jpg';
 
-// TODO: Replace with actual user data from context/auth
-const user = {
-  name: '', // <-- dynamically set user's name
-};
+const user = JSON.parse(localStorage.getItem('user')) || {};
+
 
 const features = [
   {
