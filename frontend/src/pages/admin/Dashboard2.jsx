@@ -1,18 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Box, Grid, Typography, Card, CardContent
+  Box,
+  Grid,
+  Typography,
+  Card,
+  CardContent
 } from '@mui/material';
 import { Group, Person, EventNote } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
+import axios from 'axios';
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  // Simulated data (replace with props/context/api)
-  const doctorList = [];
-  const patientList = [{}]; // 1 dummy patient
-  const appointmentList = [];
+  const [doctorList, setDoctorList] = useState([]);
+  const [patientList, setPatientList] = useState([]);
+  const [appointmentList, setAppointmentList] = useState([]);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [doctorsRes, patientsRes, appointmentsRes] = await Promise.all([
+        axios.get('http://localhost:3000/doctors'),
+        axios.get('http://localhost:3000/patients'),
+        axios.get('http://localhost:3000/appointments'),
+      ]);
+
+      setDoctorList(doctorsRes.data);
+      setPatientList(patientsRes.data);
+
+      // ✅ Only confirmed appointments
+      const confirmedAppointments = appointmentsRes.data.filter(appt => appt.status === 'Confirmed');
+      setAppointmentList(confirmedAppointments);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   const cardData = [
     {

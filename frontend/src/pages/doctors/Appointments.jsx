@@ -1,42 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableHead, TableRow, TableCell,
-  TableBody, Button, Paper
+  TableBody, Button, Paper, Snackbar, Alert
 } from '@mui/material';
-import axios from 'axios'; // ✅ required
+import dayjs from 'dayjs';
+import axios from 'axios';
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
 
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      const doctorId = localStorage.getItem('doctorId'); // ✅ get doctorId from login
-      if (!doctorId) return console.warn("No doctorId in localStorage");
+useEffect(() => {
+  const fetchAppointments = async () => {
+    const doctorId = localStorage.getItem('doctorId');
+    if (!doctorId) return console.warn("No doctorId in localStorage");
 
-      try {
-        // 🔍 Fetch the doctor details to get the name
-        const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
-        const doctorName = doctorRes.data.name;
+    try {
+      const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
+      const doctorName = doctorRes.data.name;
 
-        // 🗓 Fetch appointments for that doctor
-        const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
-        setAppointments(apptRes.data);
-      } catch (err) {
-        console.error("Failed to fetch appointments", err);
-      }
-    };
+      const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
+      const prescriptionsRes = await axios.get(`http://localhost:3000/prescriptions/doctor/${doctorName}`);
 
-    fetchAppointments();
-  }, []);
+      const updatedAppointments = apptRes.data.map(appt => {
+        const hasPrescription = prescriptionsRes.data.some(pres =>
+          pres.patientName === appt.patientName &&
+          pres.specialization === appt.department &&
+          dayjs(pres.date).format('YYYY-MM-DD') === dayjs(appt.date).format('YYYY-MM-DD')
+        );
+        return { ...appt, hasPrescription };
+      });
+
+      setAppointments(updatedAppointments);
+    } catch (err) {
+      console.error("Failed to fetch appointments or prescriptions", err);
+    }
+  };
+
+  fetchAppointments();
+}, []);
+
 
   const handleCancel = async (id) => {
     try {
-      await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
-      setAppointments(prev => prev.map(appt =>
-        appt._id === id ? { ...appt, status: 'Cancelled' } : appt
-      ));
+      const res = await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
+      setAppointments(prev =>
+        prev.map(appt =>
+          appt._id === id ? { ...appt, status: 'Cancelled' } : appt
+        )
+      );
+      setSnackbar({ open: true, message: res.data.message, severity: 'success' });
     } catch (err) {
-      console.error('Cancel failed:', err);
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.error || 'Failed to cancel appointment',
+        severity: 'error',
+      });
     }
   };
 
@@ -58,35 +81,74 @@ const Appointments = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {appointments.map((appt) => (
-              <TableRow key={appt._id}>
-                <TableCell>{appt.patientName}</TableCell>
-                <TableCell>{appt.department}</TableCell>
-                <TableCell>{appt.date}</TableCell>
-                <TableCell sx={{ color: appt.status === 'Cancelled' ? 'red' : 'green' }}>
-                  {appt.status}
-                </TableCell>
-                <TableCell>
-                  {appt.status === 'Confirmed' ? (
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      size="small"
-                      onClick={() => handleCancel(appt._id)}
-                    >
-                      Cancel
-                    </Button>
-                  ) : (
-                    <Typography variant="body2" color="textSecondary">
-                      —
-                    </Typography>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+  {appointments.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={5} align="center">
+        No appointments available.
+      </TableCell>
+    </TableRow>
+  ) : (
+    appointments.map((appt) => (
+      <TableRow key={appt._id}>
+        <TableCell>{appt.patientName}</TableCell>
+        <TableCell>{appt.department}</TableCell>
+        <TableCell>
+          {dayjs(appt.date).isValid()
+            ? dayjs(appt.date).format('DD-MM-YYYY')
+            : 'Invalid date'}
+        </TableCell>
+        <TableCell
+  sx={{
+    color:
+      appt.status === 'Cancelled'
+        ? 'red'
+        : appt.status === 'Completed'
+        ? '#1976d2'
+        : 'green',
+  }}
+>
+  {appt.status}
+</TableCell>
+
+        <TableCell>
+          {appt.status === 'Confirmed' && !appt.hasPrescription ? (
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              onClick={() => handleCancel(appt._id)}
+            >
+              Cancel
+            </Button>
+          ) : (
+            <Typography variant="body2" color="textSecondary">
+              {appt.status === 'Cancelled' ? '—' : ''}
+            </Typography>
+          )}
+        </TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
+
         </Table>
       </Paper>
+
+      {/* Snackbar for cancel success/error */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

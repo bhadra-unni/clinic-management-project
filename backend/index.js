@@ -6,7 +6,7 @@ const cors = require('cors');   //1
 
 const admindocRoute1 = require('./routes/admindocRoute1');
 const appointmentRoutes = require('./routes/appointmentRoutes');
-
+const patientRoutes = require('./routes/PatientRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const prescriptionRoutes = require('./routes/prescriptions');
@@ -29,7 +29,7 @@ app.get('/', (req, res) => {   // 1
 // Routes
 app.use('/doctors', admindocRoute1);
 app.use('/appointments', appointmentRoutes);
-
+app.use('/patients', patientRoutes);
 app.use('/admins', adminRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/prescriptions', prescriptionRoutes);
