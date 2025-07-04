@@ -2,17 +2,50 @@
 const express = require('express');
 const router = express.Router();
 const Prescription = require('../models/Prescription');
+const Appointment = require('../models/Appointment');
 
-// ✅ Add prescription (doctor)
+// ✅ Add prescription (doctor) — only for today & confirmed appointment
+// ✅ Add prescription (doctor) — only for today & confirmed appointment
 router.post('/', async (req, res) => {
+  const { patientName, doctorName, date, specialization } = req.body;
+
   try {
-    const newPrescription = new Prescription(req.body);
-    const saved = await newPrescription.save();
-    res.status(201).json(saved);
+    const existing = await Prescription.findOne({
+      patientName,
+      doctorName,
+      date: new Date(date),
+    });
+
+    if (existing) {
+      return res.status(400).json({ error: 'Prescription already exists for this appointment.' });
+    }
+
+    // Save the new prescription
+    const prescription = new Prescription(req.body);
+    await prescription.save();
+
+    // ✅ Update matching appointment to status "Completed"
+    await Appointment.findOneAndUpdate(
+      {
+        patientName,
+        doctor: doctorName,
+        department: specialization,
+        date: new Date(date),
+        status: 'Confirmed', // only update if currently confirmed
+      },
+      {
+        $set: { status: 'Completed' },
+      }
+    );
+
+    res.status(201).json({ message: 'Prescription saved and appointment marked as completed' });
   } catch (err) {
-    res.status(500).json({ message: 'Error saving prescription', error: err.message });
+    console.error('Error saving prescription:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
 
 // ✅ Get prescriptions for a patient
 router.get('/', async (req, res) => {
@@ -25,6 +58,27 @@ router.get('/', async (req, res) => {
     res.json(prescriptions);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching prescriptions', error: err.message });
+  }
+});
+
+
+router.get('/doctor/:doctorName', async (req, res) => {
+  try {
+    const allPrescriptions = await Prescription.find({ doctorName: req.params.doctorName });
+
+const today = new Date();
+const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+const prescriptions = await Prescription.find({
+  doctorName: req.params.doctorName,
+  date: { $gte: startOfDay, $lte: endOfDay }
+});
+
+    res.json(prescriptions);
+  } catch (err) {
+    console.error('Error fetching prescriptions:', err);
+    res.status(500).json({ error: 'Failed to fetch prescriptions' });
   }
 });
 

@@ -18,25 +18,29 @@ const Dashboard = () => {
   const [patientList, setPatientList] = useState([]);
   const [appointmentList, setAppointmentList] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [doctorsRes, patientsRes, appointmentsRes] = await Promise.all([
-          axios.get('http://localhost:3000/doctors'),
-          axios.get('http://localhost:3000/patients'),
-          axios.get('http://localhost:3000/appointments'),
-        ]);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [doctorsRes, patientsRes, appointmentsRes] = await Promise.all([
+        axios.get('http://localhost:3000/doctors'),
+        axios.get('http://localhost:3000/patients'),
+        axios.get('http://localhost:3000/appointments'),
+      ]);
 
-        setDoctorList(doctorsRes.data);
-        setPatientList(patientsRes.data);
-        setAppointmentList(appointmentsRes.data);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      }
-    };
+      setDoctorList(doctorsRes.data);
+      setPatientList(patientsRes.data);
 
-    fetchData();
-  }, []);
+      // ✅ Only confirmed appointments
+      const confirmedAppointments = appointmentsRes.data.filter(appt => appt.status === 'Confirmed');
+      setAppointmentList(confirmedAppointments);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   const cardData = [
     {

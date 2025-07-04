@@ -20,7 +20,7 @@ const BackgroundLayout = ({ children }) => {
           left: 0,
           width: "100%",
           height: "100%",
-          background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${backgroundImage}) center/cover no-repeat`,
+          background: ` url(${backgroundImage}) center/cover no-repeat`,
           zIndex: 1,
         }}
       />

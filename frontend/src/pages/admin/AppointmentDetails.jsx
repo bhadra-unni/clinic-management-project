@@ -22,7 +22,9 @@ const statusColors = {
   Pending: 'warning',
   Confirmed: 'success',
   Cancelled: 'error',
+  Completed: 'info', 
 };
+
 
 const AppointmentDetails = () => {
   const [appointments, setAppointments] = useState([]);

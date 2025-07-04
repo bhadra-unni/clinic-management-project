@@ -89,12 +89,14 @@ useEffect(() => {
                 </TableCell>
                 <TableCell>
                   <Typography color={
-                    appt.status === 'Confirmed' ? 'green'
-                      : appt.status === 'Pending' ? 'orange'
-                      : 'red'
-                  }>
-                    {appt.status}
-                  </Typography>
+  appt.status === 'Confirmed' ? 'green'
+    : appt.status === 'Pending' ? 'orange'
+    : appt.status === 'Completed' ? '#1976d2'
+    : 'red'
+}>
+  {appt.status}
+</Typography>
+
                 </TableCell>
                 <TableCell>
                   {appt.status === 'Confirmed' && !isPastAppointment(appt.date) && canCancelAppointment(appt.date) && (
