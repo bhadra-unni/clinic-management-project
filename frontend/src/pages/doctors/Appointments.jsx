@@ -6,8 +6,14 @@ import {
 import dayjs from 'dayjs';
 import axios from 'axios';
 
+const isPastAppointment = (dateStr) => {
+  const appointmentDate = dayjs(dateStr);
+  return appointmentDate.isBefore(dayjs(), 'day');
+};
+
+
 const Appointments = () => {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState({ upcoming: [], past: [] });
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
@@ -36,6 +42,10 @@ useEffect(() => {
       });
 
       setAppointments(updatedAppointments);
+      const upcoming = updatedAppointments.filter(appt => !isPastAppointment(appt.date));
+const past = updatedAppointments.filter(appt => isPastAppointment(appt.date));
+setAppointments({ upcoming, past });  // Change state to object
+
     } catch (err) {
       console.error("Failed to fetch appointments or prescriptions", err);
     }
@@ -63,76 +73,80 @@ useEffect(() => {
     }
   };
 
+const renderTable = (data, title) => (
+  <Box sx={{ mt: 4 }}>
+    <Typography variant="h6" fontWeight="bold" gutterBottom>
+      {title}
+    </Typography>
+    <Paper sx={{ overflowX: 'auto', borderRadius: 3 }}>
+      <Table>
+        <TableHead sx={{ backgroundColor: '#1976d2' }}>
+          <TableRow>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Patient</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
+            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((appt) => (
+            <TableRow key={appt._id}>
+              <TableCell>{appt.patientName}</TableCell>
+              <TableCell>{appt.department}</TableCell>
+              <TableCell>{dayjs(appt.date).format('DD-MM-YYYY')}</TableCell>
+              <TableCell
+                sx={{
+                  color:
+                    appt.status === 'Cancelled'
+                      ? 'red'
+                      : appt.status === 'Completed'
+                      ? '#1976d2'
+                      : 'green',
+                }}
+              >
+                {appt.status}
+              </TableCell>
+              <TableCell>
+                {appt.status === 'Confirmed' && !appt.hasPrescription ? (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => handleCancel(appt._id)}
+                  >
+                    Cancel
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    {appt.status === 'Cancelled' || appt.status === 'Completed' ? '—' : ''}
+                  </Typography>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
+  </Box>
+);
+
+
+
   return (
     <Box sx={{ px: { xs: 1, sm: 2 }, py: 2 }}>
       <Typography variant="h4" gutterBottom>
         My Appointments
       </Typography>
 
-      <Paper sx={{ overflowX: 'auto', borderRadius: 3 }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: '#1976d2' }}>
-            <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Patient</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Department</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Date</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Status</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Action</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-  {appointments.length === 0 ? (
-    <TableRow>
-      <TableCell colSpan={5} align="center">
-        No appointments available.
-      </TableCell>
-    </TableRow>
-  ) : (
-    appointments.map((appt) => (
-      <TableRow key={appt._id}>
-        <TableCell>{appt.patientName}</TableCell>
-        <TableCell>{appt.department}</TableCell>
-        <TableCell>
-          {dayjs(appt.date).isValid()
-            ? dayjs(appt.date).format('DD-MM-YYYY')
-            : 'Invalid date'}
-        </TableCell>
-        <TableCell
-  sx={{
-    color:
-      appt.status === 'Cancelled'
-        ? 'red'
-        : appt.status === 'Completed'
-        ? '#1976d2'
-        : 'green',
-  }}
->
-  {appt.status}
-</TableCell>
+      {appointments.upcoming.length > 0 && renderTable(appointments.upcoming, 'Upcoming Appointments')}
+{appointments.past.length > 0 && renderTable(appointments.past, 'Past Appointments')}
+{appointments.upcoming.length === 0 && appointments.past.length === 0 && (
+  <Typography align="center" sx={{ my: 2 }}>
+    No appointments available.
+  </Typography>
+)}
 
-        <TableCell>
-          {appt.status === 'Confirmed' && !appt.hasPrescription ? (
-            <Button
-              variant="outlined"
-              color="error"
-              size="small"
-              onClick={() => handleCancel(appt._id)}
-            >
-              Cancel
-            </Button>
-          ) : (
-            <Typography variant="body2" color="textSecondary">
-              {appt.status === 'Cancelled' ? '—' : ''}
-            </Typography>
-          )}
-        </TableCell>
-      </TableRow>
-    ))
-  )}
-</TableBody>
-
-        </Table>
-      </Paper>
 
       {/* Snackbar for cancel success/error */}
       <Snackbar

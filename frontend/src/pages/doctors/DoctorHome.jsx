@@ -23,28 +23,50 @@ const DoctorHome = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchDoctorDetails = async () => {
-      const doctorId = localStorage.getItem('doctorId');
-      if (!doctorId) {
-        setError("Doctor ID not found. Please login again.");
-        setLoading(false);
-        return;
-      }
+useEffect(() => {
+  const fetchDoctorDetails = async () => {
+    const doctorId = localStorage.getItem('doctorId');
+    if (!doctorId) {
+      setError("Doctor ID not found. Please login again.");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const response = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
-        setDoctorData(response.data);
-      } catch (err) {
-        console.error("Error fetching doctor dashboard:", err);
-        setError("Failed to load dashboard data.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
+      const doctorName = doctorRes.data.name;
+      const specialization = doctorRes.data.specialization;
 
-    fetchDoctorDetails();
-  }, []);
+      const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
+
+      const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
+      const todaysAppointments = apptRes.data.filter(appt =>
+        appt.status === 'Confirmed' &&
+        new Date(appt.date).toISOString().split('T')[0] === today
+      );
+
+      const treatedPatients = apptRes.data.filter(appt =>
+        appt.status === 'Completed'
+      );
+
+      setDoctorData({
+        name: doctorName,
+        specialization,
+        upcomingAppointments: todaysAppointments.length,
+        patientsTreated: treatedPatients.length,
+      });
+    } catch (err) {
+      console.error("Error fetching doctor dashboard:", err);
+      setError("Failed to load dashboard data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDoctorDetails();
+}, []);
+
 
   const stats = [
     { label: 'Upcoming Appointments', value: doctorData.upcomingAppointments, icon: <EventNoteIcon /> },

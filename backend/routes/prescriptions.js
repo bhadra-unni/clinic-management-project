@@ -26,17 +26,16 @@ router.post('/', async (req, res) => {
 
     // ✅ Update matching appointment to status "Completed"
     await Appointment.findOneAndUpdate(
-      {
-        patientName,
-        doctor: doctorName,
-        department: specialization,
-        date: new Date(date),
-        status: 'Confirmed', // only update if currently confirmed
-      },
-      {
-        $set: { status: 'Completed' },
-      }
-    );
+  {
+    patientName,
+    doctor: doctorName,
+    department: specialization,
+    date: new Date(date),
+    status: 'Confirmed',
+  },
+  { $set: { status: 'Completed' } }
+);
+
 
     res.status(201).json({ message: 'Prescription saved and appointment marked as completed' });
   } catch (err) {
@@ -62,18 +61,12 @@ router.get('/', async (req, res) => {
 });
 
 
+// OLD - only today's prescriptions
 router.get('/doctor/:doctorName', async (req, res) => {
   try {
-    const allPrescriptions = await Prescription.find({ doctorName: req.params.doctorName });
-
-const today = new Date();
-const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
-const prescriptions = await Prescription.find({
-  doctorName: req.params.doctorName,
-  date: { $gte: startOfDay, $lte: endOfDay }
-});
+    const prescriptions = await Prescription.find({
+      doctorName: req.params.doctorName
+    });
 
     res.json(prescriptions);
   } catch (err) {
@@ -81,5 +74,6 @@ const prescriptions = await Prescription.find({
     res.status(500).json({ error: 'Failed to fetch prescriptions' });
   }
 });
+
 
 module.exports = router;
