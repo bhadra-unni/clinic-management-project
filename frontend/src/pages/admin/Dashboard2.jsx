@@ -30,7 +30,7 @@ useEffect(() => {
       setDoctorList(doctorsRes.data);
       setPatientList(patientsRes.data);
 
-      // ✅ Include both Confirmed and Completed appointments
+
       const relevantAppointments = appointmentsRes.data.filter(
         appt => appt.status === 'Confirmed' || appt.status === 'Completed'
       );
