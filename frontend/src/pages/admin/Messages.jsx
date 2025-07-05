@@ -73,7 +73,12 @@ const Messages = () => {
                       <Button
                         variant='contained'
                         color='primary'
-                        onClick={() => navigate(`/admin/send-email/${msg.email}`)}
+                        onClick={() =>
+  navigate(`/admin/send-email/${msg.email}`, {
+    state: { recipientName: msg.name }
+  })
+}
+
                       >
                         Reply
                       </Button>

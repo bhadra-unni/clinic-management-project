@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
+
 
 const SendEmail = () => {
-  const { email } = useParams(); // Email passed via URL
+  const { email } = useParams(); 
+  const location = useLocation();// Email passed via URL
   const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
+ const [name, setName] = useState(location.state?.recipientName || '');
+
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -40,13 +43,12 @@ const SendEmail = () => {
       <form onSubmit={handleSend} style={styles.form}>
         <label style={styles.label}>Recipient Name</label>
         <input
-          type="text"
-          placeholder="Enter recipient name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          style={styles.input}
-        />
+  type="text"
+  value={name}
+  readOnly
+  style={styles.input}
+/>
+
 
         <label style={styles.label}>Message</label>
         <textarea

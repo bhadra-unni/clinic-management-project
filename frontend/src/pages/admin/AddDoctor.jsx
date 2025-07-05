@@ -27,6 +27,10 @@ const AddDoctor = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+
+  const [departments, setDepartments] = useState([]);
+const [useNewDept, setUseNewDept] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -96,6 +100,11 @@ const AddDoctor = () => {
       });
     }
   }, [location]);
+  axios.get('http://localhost:3000/doctors').then(res => {
+  const uniqueDepartments = [...new Set(res.data.map(doc => doc.department))];
+  setDepartments(uniqueDepartments);
+});
+
 
   return (
     <AdminLayout>
@@ -155,15 +164,44 @@ const AddDoctor = () => {
               />
             </>
           )}
-          <TextField
-  label="Department"
-  name="department"
-  value={form.department}
-  onChange={handleChange}
-  required
-  fullWidth
-  margin="normal"
-/>
+          <Box sx={{ mt: 2 }}>
+  <Button
+    variant="outlined"
+    size="small"
+    onClick={() => setUseNewDept(!useNewDept)}
+    sx={{ mb: 1 }}
+  >
+    {useNewDept ? 'Choose Existing Department' : 'Add New Department'}
+  </Button>
+
+  {useNewDept ? (
+    <TextField
+      label="New Department"
+      name="department"
+      value={form.department}
+      onChange={handleChange}
+      required
+      fullWidth
+    />
+  ) : (
+    <TextField
+      select
+      label="Select Department"
+      name="department"
+      value={form.department}
+      onChange={handleChange}
+      required
+      fullWidth
+    >
+      {departments.map((dept, index) => (
+        <MenuItem key={index} value={dept}>
+          {dept}
+        </MenuItem>
+      ))}
+    </TextField>
+  )}
+</Box>
+
 
           <TextField
             label="Consultancy Fees"

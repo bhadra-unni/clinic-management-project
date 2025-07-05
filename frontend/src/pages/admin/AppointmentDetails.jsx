@@ -57,14 +57,27 @@ const AppointmentDetails = () => {
 
   const now = Date.now();
 
-  // Separate upcoming and past appointments
-  const upcomingAppointments = appointments.filter(
-    (appt) => new Date(appt.date).getTime() >= now
-  );
+const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
 
-  const pastAppointments = appointments.filter(
-    (appt) => new Date(appt.date).getTime() < now
+// Upcoming: today or future + Confirmed
+const upcomingAppointments = appointments.filter((appt) => {
+  const apptDate = new Date(appt.date).toISOString().split('T')[0];
+  return appt.status === 'Confirmed' && apptDate >= today;
+});
+
+// Past: before today OR today if Completed/Cancelled
+const pastAppointments = appointments.filter((appt) => {
+  const apptDate = new Date(appt.date).toISOString().split('T')[0];
+  return (
+    appt.status === 'Cancelled' || 
+    apptDate < today || 
+    (apptDate === today && appt.status === 'Completed')
   );
+});
+
+
+
+
 
   const renderTable = (title, data) => (
     <Box sx={{ mt: 4 }}>

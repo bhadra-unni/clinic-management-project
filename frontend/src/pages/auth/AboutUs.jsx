@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -7,30 +7,35 @@ import {
   Divider,
   Container,
 } from "@mui/material";
-import HearingIcon from "@mui/icons-material/Hearing";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
-import SpaIcon from "@mui/icons-material/Spa";
 import BackgroundLayout from "./BackgroundLayout";
-
-const services = [
-  {
-    title: "ENT",
-    desc: "Specialized care for ear, nose, and throat conditions.",
-    icon: <HearingIcon fontSize="large" />,
-  },
-  {
-    title: "Orthopedics",
-    desc: "Advanced treatment for bones, joints, and muscles.",
-    icon: <AccessibilityIcon fontSize="large" />,
-  },
-  {
-    title: "Dermatology",
-    desc: "Skin, hair, and nail care by expert dermatologists.",
-    icon: <SpaIcon fontSize="large" />,
-  },
-];
+import axios from "axios";
 
 const AboutUs = () => {
+  const [departmentData, setDepartmentData] = useState({});
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/doctors");
+        const grouped = {};
+
+        res.data.forEach((doc) => {
+          if (!grouped[doc.department]) {
+            grouped[doc.department] = [];
+          }
+          grouped[doc.department].push(doc.name);
+        });
+
+        setDepartmentData(grouped);
+      } catch (err) {
+        console.error("Failed to fetch departments", err);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
   return (
     <BackgroundLayout>
       <Container
@@ -56,7 +61,6 @@ const AboutUs = () => {
           About ClinicCare+
         </Typography>
 
-        {/* About description */}
         <Typography
           variant="body1"
           sx={{
@@ -72,7 +76,6 @@ const AboutUs = () => {
           health outcomes.
         </Typography>
 
-        {/* Platform purpose */}
         <Typography
           variant="h6"
           align="center"
@@ -86,7 +89,7 @@ const AboutUs = () => {
           This platform helps patients easily find and book appointments with doctors.
         </Typography>
 
-        {/* Services */}
+        {/* Departments */}
         <Divider sx={{ my: 4, backgroundColor: "white" }} />
         <Typography
           variant="h4"
@@ -94,56 +97,78 @@ const AboutUs = () => {
           align="center"
           sx={{ textShadow: "2px 2px 4px rgba(0,0,0,0.7)" }}
         >
-          Our Services
+          Our Departments
         </Typography>
 
         <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
-  {services.map((srv, idx) => (
-    <Grid item xs={12} sm={6} md={4} key={idx}>
-      <Paper
-  elevation={4}
-  sx={{
-    p: { xs: 2, sm: 3 },
-    textAlign: "center",
-    backgroundColor: "#e3f2fd",
-    borderRadius: 3,
-    minHeight: 200,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    transition: "transform 0.3s ease, box-shadow 0.3s ease",
-    "&:hover": {
-      transform: "translateY(-6px)",
-      boxShadow: 6,
-    },
-  }}
->
-
-        <Box
-          sx={{
-            mb: 1.5,
-            bgcolor: "#1976d2",
-            width: 48,
-            height: 48,
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-          }}
-        >
-          {srv.icon}
-        </Box>
-        <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 0.5 }}>
-          {srv.title}
-        </Typography>
-        <Typography variant="body2">{srv.desc}</Typography>
-      </Paper>
-    </Grid>
-  ))}
-</Grid>
-
+          {Object.entries(departmentData).map(([dept, doctors], idx) => (
+            <Grid item key={idx}>
+              <Paper
+                elevation={5}
+                sx={{
+                  width: 220,
+                  height: 200,
+                  p: 2,
+                  textAlign: "center",
+                  backgroundColor: "#37474f", // Dark grey-blue
+                  borderRadius: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  "&:hover": {
+                    transform: "translateY(-5px)",
+                    boxShadow: 6,
+                  },
+                }}
+              >
+                <Box
+                  sx={{
+                    mb: 1.5,
+                    bgcolor: "#1976d2",
+                    width: 48,
+                    height: 48,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                  }}
+                >
+                  <AccessibilityIcon fontSize="medium" />
+                </Box>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  sx={{ color: "#ffffff", mb: 1 }}
+                >
+                  {dept}
+                </Typography>
+                <Box
+                  sx={{
+                    maxHeight: 80,
+                    overflowY: "auto",
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  {doctors.map((name, i) => (
+                    <Typography
+                      key={i}
+                      variant="body2"
+                      sx={{ color: "#cfd8dc" }}
+                    >
+                      Dr. {name}
+                    </Typography>
+                  ))}
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
 
         {/* Contact Info */}
         <Divider sx={{ my: 4, backgroundColor: "white" }} />
