@@ -57,8 +57,16 @@ useEffect(() => {
     return appointmentDate.isBefore(dayjs(), 'day');
   };
 
-  const upcomingAppointments = appointments.filter(appt => !isPastAppointment(appt.date));
-  const pastAppointments = appointments.filter(appt => isPastAppointment(appt.date));
+const upcomingAppointments = appointments.filter(
+  (appt) => !isPastAppointment(appt.date) && appt.status === "Confirmed"
+);
+
+const pastAppointments = appointments.filter(
+  (appt) =>
+    isPastAppointment(appt.date) || appt.status === "Cancelled"
+);
+
+
 
   const renderTable = (data, title) => (
     <Box sx={{ mt: 4 }}>

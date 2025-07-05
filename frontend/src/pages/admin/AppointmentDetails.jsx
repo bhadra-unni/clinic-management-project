@@ -57,14 +57,27 @@ const AppointmentDetails = () => {
 
   const now = Date.now();
 
-  // Separate upcoming and past appointments
-  const upcomingAppointments = appointments.filter(
-    (appt) => new Date(appt.date).getTime() >= now
-  );
+const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
 
-  const pastAppointments = appointments.filter(
-    (appt) => new Date(appt.date).getTime() < now
+
+const upcomingAppointments = appointments.filter((appt) => {
+  const apptDate = new Date(appt.date).toISOString().split('T')[0];
+  return appt.status === 'Confirmed' && apptDate >= today;
+});
+
+
+const pastAppointments = appointments.filter((appt) => {
+  const apptDate = new Date(appt.date).toISOString().split('T')[0];
+  return (
+    appt.status === 'Cancelled' || 
+    apptDate < today || 
+    (apptDate === today && appt.status === 'Completed')
   );
+});
+
+
+
+
 
   const renderTable = (title, data) => (
     <Box sx={{ mt: 4 }}>
@@ -81,7 +94,6 @@ const AppointmentDetails = () => {
               <TableCell sx={{ color: 'white' }}>Department</TableCell>
               <TableCell sx={{ color: 'white' }}>Date</TableCell>
               <TableCell sx={{ color: 'white' }}>Status</TableCell>
-              <TableCell sx={{ color: 'white' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -96,17 +108,7 @@ const AppointmentDetails = () => {
                   <TableCell>
                     <Chip label={appt.status} color={statusColors[appt.status] || 'default'} />
                   </TableCell>
-                  <TableCell>
-                    {appt.status !== 'Cancelled' && (
-                      <IconButton
-                        color="error"
-                        onClick={() => handleCancel(appt._id)}
-                        disabled={new Date(appt.date).getTime() - Date.now() <= 24 * 60 * 60 * 1000}
-                      >
-                        <Cancel />
-                      </IconButton>
-                    )}
-                  </TableCell>
+                  
                 </TableRow>
               ))
             ) : (

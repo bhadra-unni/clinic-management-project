@@ -30,9 +30,11 @@ useEffect(() => {
       setDoctorList(doctorsRes.data);
       setPatientList(patientsRes.data);
 
-      // ✅ Only confirmed appointments
-      const confirmedAppointments = appointmentsRes.data.filter(appt => appt.status === 'Confirmed');
-      setAppointmentList(confirmedAppointments);
+
+      const relevantAppointments = appointmentsRes.data.filter(
+        appt => appt.status === 'Confirmed' || appt.status === 'Completed'
+      );
+      setAppointmentList(relevantAppointments);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     }
@@ -40,6 +42,7 @@ useEffect(() => {
 
   fetchData();
 }, []);
+
 
 
   const cardData = [

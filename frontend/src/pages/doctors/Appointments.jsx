@@ -42,9 +42,20 @@ useEffect(() => {
       });
 
       setAppointments(updatedAppointments);
-      const upcoming = updatedAppointments.filter(appt => !isPastAppointment(appt.date));
-const past = updatedAppointments.filter(appt => isPastAppointment(appt.date));
-setAppointments({ upcoming, past });  // Change state to object
+      const today = dayjs().format('YYYY-MM-DD');
+
+const upcoming = updatedAppointments.filter(appt => {
+  const apptDate = dayjs(appt.date).format('YYYY-MM-DD');
+  return appt.status === 'Confirmed' && apptDate >= today;
+});
+
+const past = updatedAppointments.filter(appt => {
+  const apptDate = dayjs(appt.date).format('YYYY-MM-DD');
+  return appt.status === 'Cancelled' || appt.status === 'Completed' || apptDate < today;
+});
+
+setAppointments({ upcoming, past });
+ // Change state to object
 
     } catch (err) {
       console.error("Failed to fetch appointments or prescriptions", err);
@@ -90,42 +101,54 @@ const renderTable = (data, title) => (
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((appt) => (
-            <TableRow key={appt._id}>
-              <TableCell>{appt.patientName}</TableCell>
-              <TableCell>{appt.department}</TableCell>
-              <TableCell>{dayjs(appt.date).format('DD-MM-YYYY')}</TableCell>
-              <TableCell
-                sx={{
-                  color:
-                    appt.status === 'Cancelled'
-                      ? 'red'
-                      : appt.status === 'Completed'
-                      ? '#1976d2'
-                      : 'green',
-                }}
-              >
-                {appt.status}
-              </TableCell>
-              <TableCell>
-                {appt.status === 'Confirmed' && !appt.hasPrescription ? (
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    size="small"
-                    onClick={() => handleCancel(appt._id)}
-                  >
-                    Cancel
-                  </Button>
-                ) : (
-                  <Typography variant="body2" color="textSecondary">
-                    {appt.status === 'Cancelled' || appt.status === 'Completed' ? '—' : ''}
-                  </Typography>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
+  {data.length > 0 ? (
+    data.map((appt) => (
+      <TableRow key={appt._id}>
+        <TableCell>{appt.patientName}</TableCell>
+        <TableCell>{appt.department}</TableCell>
+        <TableCell>{dayjs(appt.date).format('DD-MM-YYYY')}</TableCell>
+        <TableCell
+          sx={{
+            color:
+              appt.status === 'Cancelled'
+                ? 'red'
+                : appt.status === 'Completed'
+                ? '#1976d2'
+                : 'green',
+          }}
+        >
+          {appt.status}
+        </TableCell>
+        <TableCell>
+  {appt.status === 'Confirmed' &&
+    !appt.hasPrescription &&
+    dayjs(appt.date).isAfter(dayjs().add(48, 'hour')) ? (
+      <Button
+        variant="outlined"
+        color="error"
+        size="small"
+        onClick={() => handleCancel(appt._id)}
+      >
+        Cancel
+      </Button>
+  ) : (
+    <Typography variant="body2" color="textSecondary">
+      {appt.status === 'Cancelled' || appt.status === 'Completed' ? '—' : ''}
+    </Typography>
+  )}
+</TableCell>
+
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={5} align="center">
+        No appointments found.
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
       </Table>
     </Paper>
   </Box>
@@ -139,13 +162,9 @@ const renderTable = (data, title) => (
         My Appointments
       </Typography>
 
-      {appointments.upcoming.length > 0 && renderTable(appointments.upcoming, 'Upcoming Appointments')}
+      {renderTable(appointments.upcoming, 'Upcoming Appointments')}
 {appointments.past.length > 0 && renderTable(appointments.past, 'Past Appointments')}
-{appointments.upcoming.length === 0 && appointments.past.length === 0 && (
-  <Typography align="center" sx={{ my: 2 }}>
-    No appointments available.
-  </Typography>
-)}
+
 
 
       {/* Snackbar for cancel success/error */}

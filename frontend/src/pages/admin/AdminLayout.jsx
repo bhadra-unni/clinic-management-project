@@ -43,7 +43,7 @@ const AdminLayout = ({ children }) => {
   };
 
   const handleLogout = () => {
-    // Clear local storage or token (if used)
+    
     localStorage.removeItem('token');
     navigate('/admin/login');
   };
