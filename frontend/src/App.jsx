@@ -8,6 +8,8 @@ import AppointmentDetails from "./pages/admin/AppointmentDetails";
 import Messages from "./pages/admin/Messages";
 import PatientList from "./pages/admin/PatientList";
 import Dashboard2 from './pages/admin/Dashboard2';
+import SendEmail from "./pages/admin/SendEmail";
+
 
 import PatientLayout from './pages/Patient/PatientLayout';
 import Dashboard from './pages/Patient/Dashboard';
@@ -53,6 +55,8 @@ function App() {
           <Route path="/admin/add-doctor" element={<AddDoctor />} />
           <Route path="/admin/doctor-list" element={<DoctorList />} />
           <Route path="/admin/appointment-details" element={<AppointmentDetails />} />
+          <Route path="/admin/send-email/:email" element={<SendEmail />} />
+
 
 
 
