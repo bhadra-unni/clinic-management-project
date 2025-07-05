@@ -120,21 +120,24 @@ const renderTable = (data, title) => (
           {appt.status}
         </TableCell>
         <TableCell>
-          {appt.status === 'Confirmed' && !appt.hasPrescription ? (
-            <Button
-              variant="outlined"
-              color="error"
-              size="small"
-              onClick={() => handleCancel(appt._id)}
-            >
-              Cancel
-            </Button>
-          ) : (
-            <Typography variant="body2" color="textSecondary">
-              {appt.status === 'Cancelled' || appt.status === 'Completed' ? '—' : ''}
-            </Typography>
-          )}
-        </TableCell>
+  {appt.status === 'Confirmed' &&
+    !appt.hasPrescription &&
+    dayjs(appt.date).isAfter(dayjs().add(48, 'hour')) ? (
+      <Button
+        variant="outlined"
+        color="error"
+        size="small"
+        onClick={() => handleCancel(appt._id)}
+      >
+        Cancel
+      </Button>
+  ) : (
+    <Typography variant="body2" color="textSecondary">
+      {appt.status === 'Cancelled' || appt.status === 'Completed' ? '—' : ''}
+    </Typography>
+  )}
+</TableCell>
+
       </TableRow>
     ))
   ) : (

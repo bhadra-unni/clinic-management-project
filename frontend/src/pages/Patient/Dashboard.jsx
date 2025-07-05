@@ -17,7 +17,6 @@ import doctorImg from '../../assets/image.jpg';
 
 const user = JSON.parse(localStorage.getItem('user')) || {};
 
-
 const features = [
   {
     title: 'Book Appointment',
@@ -42,22 +41,28 @@ const features = [
 const Dashboard = () => {
   const navbarHeight = 64;
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       {/* Navbar */}
       <AppBar
         position="fixed"
-        elevation={0}
+        elevation={1}
         sx={{
-          backgroundColor: '#ffffffee',
+          backgroundColor: '#ffffffdd',
           color: '#1976d2',
+          backdropFilter: 'blur(8px)',
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', height: `${navbarHeight}px` }}>
           <Typography variant="h5" fontWeight="bold">
             ClinicCare+
           </Typography>
-          <Button color="inherit" startIcon={<Logout />} href="/login">
+          <Button color="inherit" startIcon={<Logout />} onClick={handleLogout}>
             Logout
           </Button>
         </Toolbar>
@@ -66,26 +71,25 @@ const Dashboard = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          
           display: 'flex',
           alignItems: 'flex-start',
-          pt: `calc(${navbarHeight}px + 120px)`,
+          pt: `calc(${navbarHeight}px + 100px)`,
           justifyContent: 'flex-start',
           px: { xs: 3, md: 10 },
-          pb: { xs: 10, md: 12 },
+          pb: { xs: 8, md: 10 },
           minHeight: `calc(100vh - ${navbarHeight}px)`,
-          backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0) 100%), url(${doctorImg})`,
+          backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.85), rgba(255,255,255,0.4)), url(${doctorImg})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
           width: '100%',
         }}
       >
-        <Box sx={{ maxWidth: 600,mt:6 }}>
-          <Typography variant="h3" fontWeight="bold" gutterBottom>
+        <Box sx={{ maxWidth: 600, mt: 6 }}>
+          <Typography variant="h3" fontWeight="bold" gutterBottom color="primary">
             Welcome back{user.name ? `, ${user.name}` : ''} 👋
           </Typography>
-          <Typography variant="h5" fontWeight="medium" gutterBottom>
+          <Typography variant="h5" fontWeight="medium" gutterBottom color="text.secondary">
             Your health records are just a click away.
           </Typography>
           <Typography variant="body1" mb={3}>
@@ -96,7 +100,7 @@ const Dashboard = () => {
             <Button variant="contained" color="primary" href="/patient/book">
               Book Now
             </Button>
-            <Button variant="outlined" color="inherit" href="/patient/history">
+            <Button variant="outlined" color="primary" href="/patient/history">
               View History
             </Button>
           </Stack>
@@ -104,7 +108,7 @@ const Dashboard = () => {
       </Box>
 
       {/* Feature Cards */}
-      <Box sx={{ py: 6, px: { xs: 2, md: 10 }, backgroundColor: '#f4faff' }}>
+      <Box sx={{ py: 6, px: { xs: 2, md: 10 }, backgroundColor: '#f0f8ff' }}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={4}
@@ -118,16 +122,16 @@ const Dashboard = () => {
                 width: 260,
                 height: 260,
                 p: 2,
-                borderRadius: 3,
-                boxShadow: 2,
+                borderRadius: 4,
+                boxShadow: 3,
                 textAlign: 'center',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                transition: '0.3s',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                 '&:hover': {
-                  boxShadow: 4,
-                  transform: 'translateY(-4px)',
+                  transform: 'translateY(-6px)',
+                  boxShadow: 6,
                 },
               }}
             >
