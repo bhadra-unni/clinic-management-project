@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const Patient = require('../models/Patient');
@@ -43,7 +44,8 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, patient.password);
     if (!isMatch) return res.status(400).json({ message: 'Incorrect password' });
 
-    const token = jwt.sign({ id: patient._id }, 'secret', { expiresIn: '1d' });
+    const token = jwt.sign({ id: patient._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+
 
     res.json({
       message: 'Login successful',

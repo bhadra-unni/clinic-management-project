@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
+require('dotenv').config();
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://doctorbooking:doctorbooking@cluster0.oxjgrcl.mongodb.net/Booking?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGO_URI)
     .then(() =>{
         console.log('MongoDB connected')
     } )

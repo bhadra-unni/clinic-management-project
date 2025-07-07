@@ -4,8 +4,8 @@ import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import BackgroundLayout from "./BackgroundLayout";
 
-import AuthLayout from "./AuthLayout";
- import axios from "axios";
+
+import axios from '../axios';
 
 
 const ContactUs = () => {
@@ -20,7 +20,7 @@ const ContactUs = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const res = await axios.post("http://localhost:3000/messages/send", form);
+    const res = await axios.post("/messages/send", form);
     if (res.data.success) {
       alert("Message sent successfully!");
       setForm({ name: "", email: "", message: "" });

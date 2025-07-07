@@ -16,6 +16,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import doctorImg from '../../assets/image.jpg';
+import axios from '../axios';
 
 const BookAppointment = () => {
   const [departments, setDepartments] = useState([]);
@@ -33,8 +34,8 @@ const BookAppointment = () => {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await fetch('http://localhost:3000/doctors');
-        const data = await res.json();
+        const res = await axios.get('/doctors');
+const data = res.data;
         const grouped = {};
         data.forEach((doc) => {
           if (!grouped[doc.department]) grouped[doc.department] = [];
@@ -62,13 +63,7 @@ const BookAppointment = () => {
         patientName: user?.name || 'Unknown',
       };
 
-      const res = await fetch('http://localhost:3000/appointments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error('Booking failed');
+      await axios.post('/appointments', payload);
 
       setSnackbarMessage('Appointment successfully booked!');
       setSnackbarSeverity('success');

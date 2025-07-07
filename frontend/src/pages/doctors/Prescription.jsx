@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../axios';
 import {
   Box, Card, CardContent, Typography, TextField,
   Button, Divider, Stack, Paper, IconButton, Snackbar, Alert
@@ -17,11 +17,11 @@ useEffect(() => {
       const doctorName = localStorage.getItem('doctorName');
       if (!doctorName) return alert("Doctor not logged in");
 
-      const res = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
+      const res = await axios.get(`/appointments/doctor/${doctorName}`);
       const today = dayjs().format('YYYY-MM-DD');
 
       // Fetch all today's prescriptions of this doctor
-      const prescriptionRes = await axios.get(`http://localhost:3000/prescriptions/doctor/${doctorName}`);
+      const prescriptionRes = await axios.get(`/prescriptions/doctor/${doctorName}`);
       const todayPrescriptions = prescriptionRes.data.filter(p =>
         dayjs(p.date).format('YYYY-MM-DD') === today
       );
@@ -96,7 +96,7 @@ const appointmentsWithPrescriptionFields = filteredAppointments.map(appt => {
   const savePrescription = async (apptIndex) => {
     const data = appointments[apptIndex];
     try {
-      await axios.post('http://localhost:3000/prescriptions', {
+      await axios.post('/prescriptions', {
   patientName: data.patientName,
   doctorName: localStorage.getItem('doctorName'),
   date: new Date(data.date),

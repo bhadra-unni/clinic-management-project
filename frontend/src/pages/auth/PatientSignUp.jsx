@@ -16,6 +16,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import doctorBg from "/src/assets/doctor.jpeg";
 import Navbar from "./Navbar";
+import axios from '../axios';
+
 
 const PatientSignup = () => {
   const [form, setForm] = useState({
@@ -42,21 +44,15 @@ const handleSignup = async (e) => {
   }
 
   try {
-    const res = await fetch("http://localhost:3000/patients/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await axios.post('/patients/signup', form);
 
-    const data = await res.json();
-
-    if (!res.ok) throw new Error(data.message);
     alert("Signup successful. Please log in.");
     navigate("/patient/login");
   } catch (err) {
-    alert("Signup failed: " + err.message);
+    alert("Signup failed: " + (err.response?.data?.message || err.message));
   }
 };
+
 
 
   return (

@@ -10,13 +10,12 @@ import {
   TableCell,
   TableBody,
   Chip,
-  IconButton,
   Snackbar,
   Alert,
 } from '@mui/material';
-import { Cancel } from '@mui/icons-material';
 import AdminLayout from '../admin/AdminLayout';
-import axios from 'axios';
+import axios from '../axios'; // adjust path if needed
+
 
 const statusColors = {
   Pending: 'warning',
@@ -36,7 +35,7 @@ const AppointmentDetails = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/appointments');
+      const response = await axios.get(`/appointments`);
       setAppointments(response.data);
     } catch (error) {
       console.error('Failed to fetch appointments', error);
@@ -44,16 +43,6 @@ const AppointmentDetails = () => {
     }
   };
 
-  const handleCancel = async (id) => {
-    try {
-      await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
-      setSnackbar({ open: true, message: 'Appointment cancelled successfully', severity: 'success' });
-      fetchAppointments();
-    } catch (error) {
-      console.error('Error cancelling appointment:', error);
-      setSnackbar({ open: true, message: 'Failed to cancel appointment', severity: 'error' });
-    }
-  };
 
   const now = Date.now();
 

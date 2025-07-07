@@ -1,10 +1,11 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/adminModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'secretkey'; // hardcoded for now
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Admin login only
 router.post('/login', async (req, res) => {

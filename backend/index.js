@@ -1,8 +1,10 @@
-const express = require('express');  //import express   1
-const app = express();  //initialise   1
+require('dotenv').config(); 
+const express = require('express');
+const app = express();
 
-const mongoose = require('mongoose');  // 1
-const cors = require('cors');   //1
+
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 const admindocRoute1 = require('./routes/admindocRoute1');
 const appointmentRoutes = require('./routes/appointmentRoutes');
@@ -12,32 +14,26 @@ const doctorRoutes = require('./routes/doctorRoutes');
 const prescriptionRoutes = require('./routes/prescriptions');
 const messageRoutes = require('./routes/messageRoutes');
 
+require('./connection');
 
-// Connect MongoDB
-require('./connection');  //1
-
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {   // 1
-  res.send('Hello world') // 1
-})// 1
+app.get('/', (req, res) => {
+  res.send('Hello world');
+});
 
-
-// Routes
 app.use('/doctors', admindocRoute1);
 app.use('/appointments', appointmentRoutes);
 app.use('/patients', patientRoutes);
 app.use('/admins', adminRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/prescriptions', prescriptionRoutes);
-app.use('/messages', messageRoutes); // New
+app.use('/messages', messageRoutes);
 
 
+const PORT = process.env.PORT || 3000;
 
-// Start server
-app.listen(3000, () => {   // 1
-  console.log(`🚀 Server running`);  // 1
-});  // 1
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

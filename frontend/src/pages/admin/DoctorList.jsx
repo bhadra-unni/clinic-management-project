@@ -20,7 +20,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../axios';
 import AdminLayout from './AdminLayout';
 
 const DoctorList = () => {
@@ -34,7 +34,7 @@ const DoctorList = () => {
 
   const fetchDoctors = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/doctors');
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/doctors`);
       setDoctors(res.data);
     } catch (err) {
       setError('Failed to fetch doctors');
@@ -47,7 +47,7 @@ const DoctorList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/doctors/${id}`);
+      await axios.delete(`/doctors/${id}`);
       setSuccess('Doctor deleted successfully!');
       setDoctors(doctors.filter((doc) => doc._id !== id));
     } catch (err) {
@@ -66,7 +66,7 @@ const DoctorList = () => {
 
   const handleResetPassword = async () => {
     try {
-      await axios.put(`http://localhost:3000/doctors/${selectedDoctorId}/reset-password`, {
+      await axios.put(`/doctors/${selectedDoctorId}/reset-password`, {
         newPassword,
       });
       setSuccess('Password reset successfully');
@@ -91,13 +91,13 @@ const DoctorList = () => {
 
       <TableContainer component={Paper} sx={{ maxWidth: 1000, mx: 'auto', mt: 3 }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ backgroundColor: '#1976d2'}}>
             <TableRow>
-              <TableCell><strong>Name</strong></TableCell>
-              <TableCell><strong>Email</strong></TableCell>
-              <TableCell><strong>Department</strong></TableCell>
-              <TableCell><strong>Fees (₹)</strong></TableCell>
-              <TableCell align="center"><strong>Actions</strong></TableCell>
+              <TableCell sx={{ color: '#fff' }}><strong>Name</strong></TableCell>
+              <TableCell sx={{ color: '#fff' }}><strong>Email</strong></TableCell>
+              <TableCell sx={{ color: '#fff' }}><strong>Department</strong></TableCell>
+              <TableCell sx={{ color: '#fff' }}><strong>Fees (₹)</strong></TableCell>
+              <TableCell sx={{ color: '#fff' }} align="center"><strong>Actions</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

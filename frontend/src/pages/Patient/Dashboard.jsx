@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -14,8 +14,6 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { Logout } from '@mui/icons-material';
 import doctorImg from '../../assets/image.jpg';
-
-const user = JSON.parse(localStorage.getItem('user')) || {};
 
 const features = [
   {
@@ -39,6 +37,13 @@ const features = [
 ];
 
 const Dashboard = () => {
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+    setUser(storedUser);
+  }, []);
+
   const navbarHeight = 64;
 
   const handleLogout = () => {

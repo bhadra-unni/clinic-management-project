@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import BackgroundLayout from "./BackgroundLayout";
-import axios from "axios";
+import axios from '../axios';
 
 const AboutUs = () => {
   const [departmentData, setDepartmentData] = useState({});
@@ -17,7 +17,7 @@ const AboutUs = () => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/doctors");
+        const res = await axios.get("/doctors");
         const grouped = {};
 
         res.data.forEach((doc) => {

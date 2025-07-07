@@ -4,13 +4,7 @@ import {
   TableBody, Button, Paper, Snackbar, Alert
 } from '@mui/material';
 import dayjs from 'dayjs';
-import axios from 'axios';
-
-const isPastAppointment = (dateStr) => {
-  const appointmentDate = dayjs(dateStr);
-  return appointmentDate.isBefore(dayjs(), 'day');
-};
-
+import axios from '../axios';
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState({ upcoming: [], past: [] });
@@ -26,11 +20,11 @@ useEffect(() => {
     if (!doctorId) return console.warn("No doctorId in localStorage");
 
     try {
-      const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
+      const doctorRes = await axios.get(`/api/doctors/dashboard/${doctorId}`);
       const doctorName = doctorRes.data.name;
 
-      const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
-      const prescriptionsRes = await axios.get(`http://localhost:3000/prescriptions/doctor/${doctorName}`);
+      const apptRes = await axios.get(`/appointments/doctor/${doctorName}`);
+      const prescriptionsRes = await axios.get(`/prescriptions/doctor/${doctorName}`);
 
       const updatedAppointments = apptRes.data.map(appt => {
         const hasPrescription = prescriptionsRes.data.some(pres =>
@@ -55,7 +49,6 @@ const past = updatedAppointments.filter(appt => {
 });
 
 setAppointments({ upcoming, past });
- // Change state to object
 
     } catch (err) {
       console.error("Failed to fetch appointments or prescriptions", err);
@@ -68,7 +61,7 @@ setAppointments({ upcoming, past });
 
   const handleCancel = async (id) => {
     try {
-      const res = await axios.put(`http://localhost:3000/appointments/cancel/${id}`);
+      const res = await axios.put(`/appointments/cancel/${id}`);
       setAppointments(prev =>
         prev.map(appt =>
           appt._id === id ? { ...appt, status: 'Cancelled' } : appt

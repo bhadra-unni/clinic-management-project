@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { useParams, useLocation } from 'react-router-dom';
+import AdminLayout from './AdminLayout';
 
 
 const SendEmail = () => {
   const { email } = useParams(); 
-  const location = useLocation();// Email passed via URL
+  const location = useLocation();
   const [message, setMessage] = useState("");
  const [name, setName] = useState(location.state?.recipientName || '');
 
@@ -20,10 +21,10 @@ const SendEmail = () => {
     };
 
     emailjs.send(
-      'service_8py5ulb',       // Your service ID
-      'template_4mn3hss',      // Your template ID
+      'service_8py5ulb',      
+      'template_4mn3hss',      
       templateParams,
-      'K7eguUXZvchd526L1'      // Your public key
+      'K7eguUXZvchd526L1'      
     )
       .then((res) => {
         alert('Email sent successfully!');
@@ -37,6 +38,7 @@ const SendEmail = () => {
   };
 
   return (
+    <AdminLayout>
     <div style={styles.container}>
       <h2 style={styles.heading}>Send Email to: <span style={{ color: '#1976d2' }}>{email}</span></h2>
 
@@ -63,10 +65,11 @@ const SendEmail = () => {
         <button type="submit" style={styles.button}>Send Email</button>
       </form>
     </div>
-  );
+  
+    </AdminLayout>);
 };
 
-// Inline CSS styles
+
 const styles = {
   container: {
     maxWidth: '600px',

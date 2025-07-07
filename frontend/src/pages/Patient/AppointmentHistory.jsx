@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import doctorImg from '../../assets/image.jpg';
+import axios from '../axios';
 
 const AppointmentHistory = () => {
   const [appointments, setAppointments] = useState([]);
@@ -16,9 +17,8 @@ useEffect(() => {
     if (!user?.name) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/appointments/patient/${encodeURIComponent(user.name)}`);
-      const data = await res.json();
-      setAppointments(data);
+      const res = await axios.get(`/appointments/patient/${encodeURIComponent(user.name)}`);
+setAppointments(res.data);
     } catch (err) {
       console.error('Failed to fetch appointments:', err);
     } finally {
@@ -32,9 +32,8 @@ useEffect(() => {
 
   const handleCancel = async (_id) => {
     try {
-      await fetch(`http://localhost:3000/appointments/cancel/${_id}`, {
-        method: 'PUT',
-      });
+      await axios.put(`/appointments/cancel/${_id}`);
+
 
       setAppointments((prev) =>
         prev.map((appt) =>
