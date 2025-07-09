@@ -10,7 +10,8 @@ import {
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
-import axios from 'axios';
+import axios from '../axios';
+
 
 
 
@@ -61,11 +62,11 @@ const [useNewDept, setUseNewDept] = useState(false);
           department: form.department,
           fees: form.fees,
         };
-        await axios.put(`http://localhost:3000/doctors/${doctorId}`, updatedData);
+        await axios.put(`/doctors/${doctorId}`, updatedData);
         setSuccess('Doctor updated successfully!');
       } else {
         // ADD MODE
-        await axios.post('http://localhost:3000/doctors', form);
+        await axios.post(`/doctors`, form);
         setSuccess('Doctor added successfully!');
       }
 
@@ -100,7 +101,7 @@ const [useNewDept, setUseNewDept] = useState(false);
       });
     }
   }, [location]);
-  axios.get('http://localhost:3000/doctors').then(res => {
+axios.get(`/doctors`).then(res => {
   const uniqueDepartments = [...new Set(res.data.map(doc => doc.department))];
   setDepartments(uniqueDepartments);
 });

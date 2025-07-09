@@ -13,9 +13,10 @@ import {
 import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios'; // ✅ Don't forget this import
+import axios from '../axios';
 import doctorBg from '../../assets/doctor.jpeg';
 import Navbar from './Navbar';
+import { jwtDecode } from 'jwt-decode';
 
 const DoctorLogin = () => {
   const [email, setEmail] = useState('');
@@ -25,25 +26,29 @@ const DoctorLogin = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:3000/api/doctors/login', {
+      const response = await axios.post('/api/doctors/login', {
         email,
         password,
       });
+      const token = response.data.token;
+    const decoded = jwtDecode(token);
 
-     
+        if (decoded.role !== 'doctor') {
+      alert("Access denied. Not a doctor.");
+      return;
+    }
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('doctorId', response.data.doctor.id);
+      localStorage.setItem('doctorName', response.data.doctor.name);
+      
       setSuccess('Login successful!');
       setError('');
-
-      // Store token in localStorage
-      localStorage.setItem('doctorId', response.data.doctor.id);
-    
-localStorage.setItem('doctorName', response.data.doctor.name);
-       localStorage.setItem('token', response.data.token);
-      // Redirect to doctor dashboard (you can update the path)
       navigate('/doctor/dashboard');
     } catch (err) {
       console.error(err);

@@ -9,7 +9,8 @@ import {
 import { Group, Person, EventNote } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from './AdminLayout';
-import axios from 'axios';
+import axios from '../axios';
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,9 +23,9 @@ useEffect(() => {
   const fetchData = async () => {
     try {
       const [doctorsRes, patientsRes, appointmentsRes] = await Promise.all([
-        axios.get('http://localhost:3000/doctors'),
-        axios.get('http://localhost:3000/patients'),
-        axios.get('http://localhost:3000/appointments'),
+        axios.get(`/doctors`),
+        axios.get(`/patients`),
+        axios.get(`/appointments`),
       ]);
 
       setDoctorList(doctorsRes.data);

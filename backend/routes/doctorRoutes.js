@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
@@ -5,10 +6,9 @@ const docModel = require('../models/Doctor');
 const Appointment = require('../models/Appointment');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const authMidd = require('../midd/authMiddleware')
+const auth = require('../midd/authorize')
 
-// -----------------------------
-// LOGIN ROUTE
-// -----------------------------
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -23,11 +23,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    const token = jwt.sign(
-      { id: doctor._id, role: 'doctor' },
-      'yourSecretKey',
-      { expiresIn: '2h' }
-    );
+    const token = jwt.sign({ id: doctor._id, role: 'doctor' }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
     res.json({
       message: 'Login successful',
@@ -46,10 +42,8 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// -----------------------------
-// DASHBOARD ROUTE
-// -----------------------------
-router.get('/dashboard/:doctorId', async (req, res) => {
+
+router.get('/dashboard/:doctorId', authMidd, auth('doctor'), async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
 
@@ -61,14 +55,14 @@ router.get('/dashboard/:doctorId', async (req, res) => {
 
     const today = new Date().toISOString().split('T')[0]; // e.g., '2025-06-28'
 
-    // Upcoming confirmed appointments
+
     const upcomingAppointments = await Appointment.countDocuments({
       doctor: doctor.name,
       status: 'Confirmed',
       date: { $gte: today }
     });
 
-    // Total patients treated (all confirmed, past or present)
+
     const patientsTreated = await Appointment.countDocuments({
       doctor: doctor.name,
       status: 'Confirmed'

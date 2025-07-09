@@ -8,6 +8,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { format } from 'date-fns';
 import doctorImg from '../../assets/image.jpg';
+import axios from '../axios';
 
 const ViewPrescription = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -17,9 +18,14 @@ const ViewPrescription = () => {
     const fetchPrescriptions = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const res = await fetch(`http://localhost:3000/prescriptions?patientName=${user?.name}`);
-        const data = await res.json();
-        setPrescriptions(data);
+        if (!user?.name) {
+          setLoading(false);
+          return;
+        }
+
+        const res = await axios.get(`/prescriptions?patientName=${user.name}`);
+        const sortedData = res.data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setPrescriptions(sortedData);
       } catch (err) {
         console.error('Failed to fetch prescriptions:', err);
       } finally {
@@ -66,7 +72,7 @@ const ViewPrescription = () => {
           width: '100%',
         }}
       >
-        <Typography variant="h4" fontWeight="bold" textAlign='center' gutterBottom color="primary">
+        <Typography variant="h4" fontWeight="bold" textAlign="center" gutterBottom color="primary">
           Your Prescriptions
         </Typography>
 
@@ -135,23 +141,31 @@ const ViewPrescription = () => {
                       <TableRow>
                         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>#</TableCell>
                         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Name</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Dosage</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Frequency</TableCell>
-                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Duration</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Dosage (mg)</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Frequency (times/day)</TableCell>
+                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Duration (days)</TableCell>
                         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Instructions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {prescription.medicines.map((med, i) => (
-                        <TableRow key={i}>
-                          <TableCell>{i + 1}</TableCell>
-                          <TableCell>{med.name}</TableCell>
-                          <TableCell>{med.dosage}</TableCell>
-                          <TableCell>{med.frequency}</TableCell>
-                          <TableCell>{med.duration}</TableCell>
-                          <TableCell>{med.instructions}</TableCell>
+                      {prescription?.medicines?.length > 0 ? (
+                        prescription.medicines.map((med, i) => (
+                          <TableRow key={i}>
+                            <TableCell>{i + 1}</TableCell>
+                            <TableCell>{med.name}</TableCell>
+                            <TableCell>{med.dosage}</TableCell>
+                            <TableCell>{med.frequency}</TableCell>
+                            <TableCell>{med.duration}</TableCell>
+                            <TableCell>{med.instructions}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={6} align="center">
+                            No medicines prescribed.
+                          </TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
                 </Box>

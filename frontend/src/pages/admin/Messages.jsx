@@ -11,7 +11,7 @@ import {
   Button,
 } from '@mui/material';
 import AdminLayout from './AdminLayout';
-import axios from 'axios';
+import axios from '../axios';
 import { useNavigate } from 'react-router-dom';
 
 const Messages = () => {
@@ -24,7 +24,7 @@ const Messages = () => {
 
   const fetchMessages = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/messages/all');
+      const response = await axios.get(`/messages/all`);
       setMessages(response.data);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -36,7 +36,7 @@ const Messages = () => {
   if (!confirmDelete) return;
 
   try {
-    await axios.delete(`http://localhost:3000/messages/${id}`);
+    await axios.delete(`/messages/${id}`);
     setMessages((prev) => prev.filter((msg) => msg._id !== id));
   } catch (error) {
     console.error('Error deleting message:', error);

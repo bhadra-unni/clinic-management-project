@@ -3,10 +3,13 @@ const express = require('express');
 const router = express.Router();
 const Prescription = require('../models/Prescription');
 const Appointment = require('../models/Appointment');
+const authMidd = require('../midd/authMiddleware')
+const auth = require('../midd/authorize')
+
 
 // ✅ Add prescription (doctor) — only for today & confirmed appointment
 // ✅ Add prescription (doctor) — only for today & confirmed appointment
-router.post('/', async (req, res) => {
+router.post('/', authMidd, auth('doctor'), async (req, res) => {
   const { patientName, doctorName, date, specialization } = req.body;
 
   try {
@@ -47,7 +50,7 @@ router.post('/', async (req, res) => {
 
 
 // ✅ Get prescriptions for a patient
-router.get('/', async (req, res) => {
+router.get('/', authMidd, auth('patient'), async (req, res) => {
   const { patientName } = req.query;
   try {
     if (!patientName) {
@@ -62,7 +65,7 @@ router.get('/', async (req, res) => {
 
 
 // OLD - only today's prescriptions
-router.get('/doctor/:doctorName', async (req, res) => {
+router.get('/doctor/:doctorName', authMidd, auth('doctor'), async (req, res) => {
   try {
     const prescriptions = await Prescription.find({
       doctorName: req.params.doctorName

@@ -11,7 +11,8 @@ import {
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import PersonIcon from '@mui/icons-material/Person';
-import axios from 'axios';
+import axios from '../axios';
+
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState({
@@ -33,11 +34,11 @@ useEffect(() => {
     }
 
     try {
-      const doctorRes = await axios.get(`http://localhost:3000/api/doctors/dashboard/${doctorId}`);
+      const doctorRes = await axios.get(`/api/doctors/dashboard/${doctorId}`);
       const doctorName = doctorRes.data.name;
       const specialization = doctorRes.data.specialization;
 
-      const apptRes = await axios.get(`http://localhost:3000/appointments/doctor/${doctorName}`);
+      const apptRes = await axios.get(`/appointments/doctor/${doctorName}`);
 
       const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
 
@@ -141,7 +142,7 @@ useEffect(() => {
             Reminder 💡
           </Typography>
           <Typography variant="body1" sx={{ mt: 1 }}>
-            Don’t forget to check the patient notes before today's appointments.
+            Don’t forget to add prescribed medication for your patients in the "Prescriptions" tab.
           </Typography>
         </Paper>
       </Box>

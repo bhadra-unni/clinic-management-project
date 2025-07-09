@@ -5,8 +5,7 @@ import {
   TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
 import AdminLayout from './AdminLayout';
-//import { getAllPatients } from '../../assets/services/adminService';
-
+import axios from '../axios';
 
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
@@ -14,9 +13,8 @@ const PatientList = () => {
  useEffect(() => {
   const fetchPatients = async () => {
     try {
-      const res = await fetch('http://localhost:3000/patients');
-      const data = await res.json();
-      setPatients(data);
+      const res = await axios.get('/patients');
+    setPatients(res.data);
     } catch (error) {
       console.error('Error fetching patients:', error);
     }

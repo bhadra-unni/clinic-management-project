@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
 import Navbar from './Navbar';
+import axios from '../axios';
 
 const PatientLogin = () => {
   const [email, setEmail] = useState('');
@@ -25,23 +26,19 @@ const handleLogin = async (e) => {
   e.preventDefault();
 
   try {
-    const res = await fetch("http://localhost:3000/patients/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+    const response = await axios.post('/patients/login', {
+      email,
+      password,
     });
 
-    const data = await res.json();
-
-    if (!res.ok) throw new Error(data.message);
-
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.patient));
-    navigate("/patient/dashboard");
+    localStorage.setItem('token', response.data.token);
+    localStorage.setItem('user', JSON.stringify(response.data.patient));
+    navigate('/patient/dashboard');
   } catch (err) {
-    alert("Login failed: " + err.message);
+    alert("Login failed: " + (err.response?.data?.message || err.message));
   }
 };
+
 
 
   return (
@@ -161,7 +158,7 @@ const handleLogin = async (e) => {
             >
               Don’t have an account?{' '}
               <Link
-                to="/patient/signup"
+                to="/signup/patient"
                 style={{
                   color: '#1976d2',
                   fontWeight: 500,

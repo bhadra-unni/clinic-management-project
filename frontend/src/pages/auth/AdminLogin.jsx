@@ -12,9 +12,11 @@ import {
 import { Visibility, VisibilityOff, Person, Lock } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import doctorBg from '../../assets/doctor.jpeg'; // ✅ background image
-import axios from 'axios';
+import doctorBg from '../../assets/doctor.jpeg'; 
+import axios from '../axios';
 import Navbar from './Navbar';
+import { jwtDecode } from 'jwt-decode';
+ // Ensure you have this package installed
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -25,16 +27,23 @@ const AdminLogin = () => {
  const handleLogin = async (e) => {
   e.preventDefault();
   try {
-    const res = await axios.post('http://localhost:3000/admins/login', {
+    const res = await axios.post('/admins/login', {
       email,
       password,
     });
 
-    // Store token in localStorage
-    localStorage.setItem('adminToken', res.data.token);
+    const token = res.data.token;
+
+    const decoded = jwtDecode(token);
+    if (decoded.role !== 'admin') {
+      alert("Access denied. Not an admin.");
+      return;
+    }
+
+    localStorage.setItem('token', res.data.token);
 
     alert("Login successful!");
-    navigate('/admin/dashboard'); // redirect
+    navigate('/admin/dashboard'); 
   } catch (err) {
     alert("Login failed: " + (err.response?.data || err.message));
   }
