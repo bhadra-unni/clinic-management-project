@@ -12,21 +12,22 @@ import {
   Chip,
   Snackbar,
   Alert,
+  CircularProgress
 } from '@mui/material';
 import AdminLayout from '../admin/AdminLayout';
-import axios from '../axios'; // adjust path if needed
-
+import axios from '../axios';
+import dayjs from 'dayjs';
 
 const statusColors = {
   Pending: 'warning',
   Confirmed: 'success',
   Cancelled: 'error',
-  Completed: 'info', 
+  Completed: 'info',
 };
-
 
 const AppointmentDetails = () => {
   const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
@@ -34,39 +35,33 @@ const AppointmentDetails = () => {
   }, []);
 
   const fetchAppointments = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(`/appointments`);
       setAppointments(response.data);
     } catch (error) {
       console.error('Failed to fetch appointments', error);
       setSnackbar({ open: true, message: 'Failed to fetch appointments', severity: 'error' });
+    } finally {
+      setLoading(false);
     }
   };
 
+  const today = dayjs().format('YYYY-MM-DD');
 
-  const now = Date.now();
+  const upcomingAppointments = appointments.filter((appt) => {
+    const apptDate = dayjs(appt.date).format('YYYY-MM-DD');
+    return appt.status === 'Confirmed' && apptDate >= today;
+  });
 
-const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD'
-
-
-const upcomingAppointments = appointments.filter((appt) => {
-  const apptDate = new Date(appt.date).toISOString().split('T')[0];
-  return appt.status === 'Confirmed' && apptDate >= today;
-});
-
-
-const pastAppointments = appointments.filter((appt) => {
-  const apptDate = new Date(appt.date).toISOString().split('T')[0];
-  return (
-    appt.status === 'Cancelled' || 
-    apptDate < today || 
-    (apptDate === today && appt.status === 'Completed')
-  );
-});
-
-
-
-
+  const pastAppointments = appointments.filter((appt) => {
+    const apptDate = dayjs(appt.date).format('YYYY-MM-DD');
+    return (
+      appt.status === 'Cancelled' ||
+      apptDate < today ||
+      (apptDate === today && appt.status === 'Completed')
+    );
+  });
 
   const renderTable = (title, data) => (
     <Box sx={{ mt: 4 }}>
@@ -93,16 +88,15 @@ const pastAppointments = appointments.filter((appt) => {
                   <TableCell>{appt.patientName}</TableCell>
                   <TableCell>{appt.doctor}</TableCell>
                   <TableCell>{appt.department}</TableCell>
-                  <TableCell>{new Date(appt.date).toLocaleDateString('en-GB')}</TableCell>
+                  <TableCell>{dayjs(appt.date).format('DD-MM-YYYY')}</TableCell>
                   <TableCell>
                     <Chip label={appt.status} color={statusColors[appt.status] || 'default'} />
                   </TableCell>
-                  
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={6} align="center">
                   No appointments found.
                 </TableCell>
               </TableRow>
@@ -120,8 +114,16 @@ const pastAppointments = appointments.filter((appt) => {
           Appointment Details
         </Typography>
 
-        {renderTable('Upcoming Appointments', upcomingAppointments)}
-        {renderTable('Past Appointments', pastAppointments)}
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            {renderTable('Upcoming Appointments', upcomingAppointments)}
+            {renderTable('Past Appointments', pastAppointments)}
+          </>
+        )}
 
         <Snackbar
           open={snackbar.open}
