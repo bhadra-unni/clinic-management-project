@@ -158,7 +158,7 @@ const handleLogin = async (e) => {
             >
               Don’t have an account?{' '}
               <Link
-                to="/patient/signup"
+                to="/signup/patient"
                 style={{
                   color: '#1976d2',
                   fontWeight: 500,
