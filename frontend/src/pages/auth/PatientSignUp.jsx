@@ -47,7 +47,7 @@ const handleSignup = async (e) => {
     const res = await axios.post('/patients/signup', form);
 
     alert("Signup successful. Please log in.");
-    navigate("/patient/login");
+    navigate("/login/patient");
   } catch (err) {
     alert("Signup failed: " + (err.response?.data?.message || err.message));
   }
@@ -186,7 +186,7 @@ const handleSignup = async (e) => {
               >
                 Already have an account?{" "}
                 <Link
-                  to="/patient/login"
+                  to="/login/patient"
                   style={{
                     textDecoration: "none",
                     color: "#1976d2",
