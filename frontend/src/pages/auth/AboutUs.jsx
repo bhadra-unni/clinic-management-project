@@ -71,9 +71,7 @@ const AboutUs = () => {
             textAlign: "center",
           }}
         >
-          ClinicCare+ is a next-generation digital health platform designed to
-          streamline communication, simplify patient management, and improve
-          health outcomes.
+          At ClinicCare+, we are committed to delivering compassionate and comprehensive healthcare services. Our clinic brings together experienced doctors, modern medical facilities, and a patient-first approach to ensure the well-being of every individual who walks through our doors.
         </Typography>
 
         <Typography
@@ -86,8 +84,9 @@ const AboutUs = () => {
             textShadow: "1px 1px 3px rgba(0,0,0,0.7)",
           }}
         >
-          This platform helps patients easily find and book appointments with doctors.
+          We provide trusted medical care across multiple departments and make it easy for patients to connect with the right doctor at the right time.
         </Typography>
+
 
         {/* Departments */}
         <Divider sx={{ my: 4, backgroundColor: "white" }} />
@@ -169,7 +168,26 @@ const AboutUs = () => {
             </Grid>
           ))}
         </Grid>
-
+{/* Working Hours Section */}
+<Divider sx={{ my: 4, backgroundColor: "white" }} />
+<Typography
+  variant="h4"
+  align="center"
+  sx={{ textShadow: "2px 2px 4px rgba(0,0,0,0.7)" }}
+>
+  Working Hours
+</Typography>
+<Box sx={{ mt: 2, textAlign: "center" }}>
+  <Typography variant="body2" sx={{ color: "#e0e0e0", mb: 0.5 }}>
+    Monday – Friday: 9:00 AM – 5:00 PM
+  </Typography>
+  <Typography variant="body2" sx={{ color: "#e0e0e0", mb: 0.5 }}>
+    Saturday: 9:00 AM – 1:00 PM
+  </Typography>
+  <Typography variant="body2" sx={{ color: "#ffcc80", fontWeight: 'bold' }}>
+    Sunday & Public Holidays: Closed
+  </Typography>
+</Box>
         {/* Contact Info */}
         <Divider sx={{ my: 4, backgroundColor: "white" }} />
         <Typography
@@ -184,7 +202,7 @@ const AboutUs = () => {
           align="center"
           sx={{ mt: 1, textShadow: "1px 1px 3px rgba(0,0,0,0.7)" }}
         >
-          Email: support@cliniccare.com | Phone: +91 98765 43210 | Address:
+          Email: support@cliniccare.com | Phone: +012345678901 | Address:
           21st Avenue, Technopark, Kerala.
         </Typography>
       </Container>
