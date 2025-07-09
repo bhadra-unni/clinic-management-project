@@ -39,8 +39,9 @@ const DoctorDashboard = ({ children }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('doctorToken');
-    navigate('/doctor/login');
+    localStorage.removeItem('token');
+    localStorage.clear();
+    navigate('/login/doctor');
   };
 
   const drawerContent = (

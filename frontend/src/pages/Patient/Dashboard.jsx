@@ -14,6 +14,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { Logout } from '@mui/icons-material';
 import doctorImg from '../../assets/image.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const features = [
   {
@@ -38,6 +39,7 @@ const features = [
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user')) || {};
@@ -47,8 +49,9 @@ const Dashboard = () => {
   const navbarHeight = 64;
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    window.location.href = '/login';
+    localStorage.removeItem('token');
+    localStorage.clear();
+    navigate('/login/patient')
   };
 
   return (

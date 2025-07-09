@@ -101,7 +101,7 @@ const [useNewDept, setUseNewDept] = useState(false);
       });
     }
   }, [location]);
-axios.get(`${import.meta.env.VITE_API_URL}/doctors`).then(res => {
+axios.get(`/doctors`).then(res => {
   const uniqueDepartments = [...new Set(res.data.map(doc => doc.department))];
   setDepartments(uniqueDepartments);
 });

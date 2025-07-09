@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import axios from '../axios';
 import doctorBg from '../../assets/doctor.jpeg';
 import Navbar from './Navbar';
+import { jwtDecode } from 'jwt-decode';
 
 const DoctorLogin = () => {
   const [email, setEmail] = useState('');
@@ -25,6 +26,7 @@ const DoctorLogin = () => {
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -33,16 +35,20 @@ const DoctorLogin = () => {
         email,
         password,
       });
+      const token = response.data.token;
+    const decoded = jwtDecode(token);
 
-     
+        if (decoded.role !== 'doctor') {
+      alert("Access denied. Not a doctor.");
+      return;
+    }
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('doctorId', response.data.doctor.id);
+      localStorage.setItem('doctorName', response.data.doctor.name);
+      
       setSuccess('Login successful!');
       setError('');
-
-      localStorage.setItem('doctorId', response.data.doctor.id);
-    
-localStorage.setItem('doctorName', response.data.doctor.name);
-       localStorage.setItem('token', response.data.token);
-
       navigate('/doctor/dashboard');
     } catch (err) {
       console.error(err);

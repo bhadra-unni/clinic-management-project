@@ -1,4 +1,3 @@
-// src/layouts/AdminLayout.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -43,9 +42,10 @@ const AdminLayout = ({ children }) => {
   };
 
   const handleLogout = () => {
-    
-    localStorage.removeItem('token');
-    navigate('/admin/login');
+    localStorage.removeItem("token");
+    localStorage.clear();
+navigate("/login/admin");
+
   };
 
   const drawerContent = (

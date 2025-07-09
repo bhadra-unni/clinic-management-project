@@ -15,6 +15,8 @@ import { motion } from 'framer-motion';
 import doctorBg from '../../assets/doctor.jpeg'; 
 import axios from '../axios';
 import Navbar from './Navbar';
+import { jwtDecode } from 'jwt-decode';
+ // Ensure you have this package installed
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -30,8 +32,15 @@ const AdminLogin = () => {
       password,
     });
 
+    const token = res.data.token;
 
-    localStorage.setItem('adminToken', res.data.token);
+    const decoded = jwtDecode(token);
+    if (decoded.role !== 'admin') {
+      alert("Access denied. Not an admin.");
+      return;
+    }
+
+    localStorage.setItem('token', res.data.token);
 
     alert("Login successful!");
     navigate('/admin/dashboard'); 

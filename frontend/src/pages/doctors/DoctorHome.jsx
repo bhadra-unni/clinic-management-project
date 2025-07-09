@@ -142,7 +142,7 @@ useEffect(() => {
             Reminder 💡
           </Typography>
           <Typography variant="body1" sx={{ mt: 1 }}>
-            Don’t forget to check the patient notes before today's appointments.
+            Don’t forget to add prescribed medication for your patients in the "Prescriptions" tab.
           </Typography>
         </Paper>
       </Box>

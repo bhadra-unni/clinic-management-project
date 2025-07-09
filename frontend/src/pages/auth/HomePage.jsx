@@ -13,7 +13,7 @@ const HomePage = () => {
   const handleRoleChange = (event, newRole) => {
     if (newRole) {
       setRole(newRole);
-      navigate(`/${newRole}/login`);
+      navigate(`/login/${newRole}`);
     }
   };
 

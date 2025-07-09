@@ -74,9 +74,14 @@ const data = res.data;
       setDate(null);
     } catch (err) {
       console.error('Booking error:', err.message);
-      setSnackbarMessage('Failed to book appointment. Try again.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+        const errorMsg =
+    err.response?.data?.error ||
+    err.response?.data?.message ||
+    'Failed to book appointment. Try again.';
+
+  setSnackbarMessage(errorMsg);
+  setSnackbarSeverity('error');
+  setSnackbarOpen(true);
     } finally {
       setLoading(false);
     }

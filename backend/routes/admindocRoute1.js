@@ -2,10 +2,12 @@ const express = require('express');
 const router = express.Router();
 const docModel = require('../models/Doctor');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken'); // ✅ Add this too
+const jwt = require('jsonwebtoken'); 
+const authMidd = require('../midd/authMiddleware')
+const auth = require('../midd/authorize')
 
 // Add doctor (Admin only) - with hashed password
-router.post('/', async (req, res) => {
+router.post('/', authMidd, auth('admin'), async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     await docModel({ ...req.body, password: hashedPassword }).save();
@@ -19,7 +21,7 @@ router.post('/', async (req, res) => {
 // Get all doctors
 router.get('/', async (req, res) => {
   try {
-    const doctors = await docModel.find();
+    const doctors = await docModel.find().select('-password');
     res.send(doctors);
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -27,7 +29,7 @@ router.get('/', async (req, res) => {
 });
 
 // Delete doctor
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMidd, auth('admin'), async (req, res) => {
   try {
     await docModel.findByIdAndDelete(req.params.id);
     res.send({ message: 'Doctor deleted' });
@@ -37,7 +39,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Update doctor
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMidd, auth('admin'), async (req, res) => {
   try {
     await docModel.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json({ message: 'Doctor updated successfully' });
@@ -46,7 +48,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id/reset-password', async (req, res) => {
+router.put('/:id/reset-password', authMidd, auth('admin'), async (req, res) => {
   const { newPassword } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -59,5 +61,4 @@ router.put('/:id/reset-password', async (req, res) => {
 
 
 
-// ✅ Final line
 module.exports = router;

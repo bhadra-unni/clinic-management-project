@@ -4,9 +4,11 @@ const router = express.Router();
 const Patient = require('../models/Patient');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const authMidd = require('../midd/authMiddleware')
+const auth = require('../midd/authorize')
 
 // GET all patients
-router.get('/', async (req, res) => {
+router.get('/', authMidd, auth('admin', 'patient'), async (req, res) => {
   try {
     const patients = await Patient.find();
     res.json(patients);
@@ -44,8 +46,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, patient.password);
     if (!isMatch) return res.status(400).json({ message: 'Incorrect password' });
 
-    const token = jwt.sign({ id: patient._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
+    const token = jwt.sign({ id: patient._id, role: 'patient' }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.json({
       message: 'Login successful',
@@ -64,3 +65,4 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+

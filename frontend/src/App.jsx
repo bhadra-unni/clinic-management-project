@@ -10,7 +10,6 @@ import PatientList from "./pages/admin/PatientList";
 import Dashboard2 from './pages/admin/Dashboard2';
 import SendEmail from "./pages/admin/SendEmail";
 
-
 import PatientLayout from './pages/Patient/PatientLayout';
 import Dashboard from './pages/Patient/Dashboard';
 import AppointmentHistory from './pages/Patient/AppointmentHistory';
@@ -19,20 +18,19 @@ import BookAppointment from "./pages/Patient/BookAppointment";
 
 import PatientLogin from "./pages/auth/PatientLogin";
 import PatientSignup from "./pages/auth/PatientSignUp";
-import DoctorLogin from '/src/pages/auth/DoctorLogin.jsx';
+import DoctorLogin from "./pages/auth/DoctorLogin";
 
 import AdminLogin from "./pages/auth/AdminLogin";
 import ContactUs from "./pages/auth/ContactUs";
 import HomePage from "./pages/auth/HomePage";
 import AboutUs from "./pages/auth/AboutUs";
 
-
 import DoctorDashboard from "./pages/doctors/DoctorDashboard";
 import DoctorHome from "./pages/doctors/DoctorHome";
 import Appointments from "./pages/doctors/Appointments";
 import Prescription from "./pages/doctors/Prescription";
 
-
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -40,41 +38,43 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* ✅ Patient layout wrapper */}
-          <Route path="/patient" element={<PatientLayout />}>
-            <Route path="/patient/dashboard" element={<Dashboard />} />
-            <Route path="/patient/book" element={<BookAppointment />} />
-            <Route path="/patient/history" element={<AppointmentHistory />} />
-            <Route path="/patient/prescriptions" element={<ViewPrescription />} />
+          {/* ✅ Patient Routes (Nested inside PatientLayout) */}
+          <Route path="/patient" element={<ProtectedRoute role="patient"><PatientLayout /></ProtectedRoute>}>
+  <Route index element={<Dashboard />} />
+  <Route path="dashboard" element={<Dashboard />} />
+  <Route path="book" element={<BookAppointment />} />
+  <Route path="history" element={<AppointmentHistory />} />
+  <Route path="prescriptions" element={<ViewPrescription />} />
+</Route>
+
+
+          {/* ✅ Admin Routes (Protected + Nested) */}
+          <Route path="/admin" element={<ProtectedRoute role="admin" />}>
+            <Route path="dashboard" element={<Dashboard2 />} />
+            <Route path="patient-list" element={<PatientList />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="add-doctor" element={<AddDoctor />} />
+            <Route path="doctor-list" element={<DoctorList />} />
+            <Route path="appointment-details" element={<AppointmentDetails />} />
+            <Route path="send-email/:email" element={<SendEmail />} />
           </Route>
 
-          {/* ✅ Admin routes (outside of PatientLayout) */}
-           <Route path="/admin/dashboard" element={<Dashboard2 />} />
-           <Route path="/admin/patient-list" element={<PatientList />} />
-          <Route path="/admin/messages" element={<Messages />} />
-          <Route path="/admin/add-doctor" element={<AddDoctor />} />
-          <Route path="/admin/doctor-list" element={<DoctorList />} />
-          <Route path="/admin/appointment-details" element={<AppointmentDetails />} />
-          <Route path="/admin/send-email/:email" element={<SendEmail />} />
+          {/* ✅ Doctor Routes */}
+          <Route path="/doctor" element={<ProtectedRoute role="doctor" />}>
+            <Route path="dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
+            <Route path="appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
+            <Route path="prescriptions" element={<DoctorDashboard><Prescription /></DoctorDashboard>} />
+          </Route>
 
-
-
-
-          {/* ✅ Doctors route */}
-          <Route path="/doctor/dashboard" element={<DoctorDashboard><DoctorHome /></DoctorDashboard>} />
-          <Route path="/doctor/appointments" element={<DoctorDashboard><Appointments /></DoctorDashboard>} />
-          <Route path="/doctor/prescriptions" element={<DoctorDashboard><Prescription/></DoctorDashboard>} />
-
-
-          {/*Login pages route(auth)*/}
-              <Route path="/" element={<HomePage />} />
-      <Route path="/patient/login" element={<PatientLogin />} />
-      <Route path="/patient/signup" element={<PatientSignup/>} />
-      <Route path="/doctor/login" element={<DoctorLogin />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/contact" element={<ContactUs />} />
-      <Route path="/aboutus" element={<AboutUs />} />
-
+          {/* ✅ Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login/patient" element={<PatientLogin />} />
+          <Route path="/signup/patient" element={<PatientSignup />} />
+          <Route path="/login/doctor" element={<DoctorLogin />} />
+          <Route path="/login/admin" element={<AdminLogin />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          
         </Routes>
       </BrowserRouter>
     </LocalizationProvider>
