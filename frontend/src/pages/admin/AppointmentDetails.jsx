@@ -65,7 +65,7 @@ const AppointmentDetails = () => {
 
   const renderTable = (title, data) => (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" fontWeight='bold' gutterBottom>
         {title}
       </Typography>
       <Paper sx={{ overflowX: 'auto' }}>
@@ -110,7 +110,7 @@ const AppointmentDetails = () => {
   return (
     <AdminLayout>
       <Box sx={{ maxWidth: '95%', mx: 'auto', mt: 3 }}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h4" fontWeight="bold" align="center" color='primary' gutterBottom>
           Appointment Details
         </Typography>
 

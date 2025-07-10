@@ -114,7 +114,7 @@ axios.get(`/doctors`).then(res => {
         elevation={3}
         sx={{ maxWidth: 600, mx: 'auto', p: 4, mt: 2 }}
       >
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h5" align="center" fontWeight='bold' gutterBottom>
           {location.state ? 'Edit Doctor' : 'Add New Doctor'}
         </Typography>
 
