@@ -86,24 +86,29 @@ const PatientLayout = () => {
           color: '#1976d2',
         }}
       >
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          {!isDashboard && isMobile && (
-            <IconButton color="inherit" edge="start" onClick={toggleDrawer}>
-              <Menu />
-            </IconButton>
-          )}
-          <Typography variant="h5" component="div">
-            ClinicCare+
-          </Typography>
-          <Button
-            color="inherit"
-            startIcon={<Logout />}
-            onClick={handleLogout}
-            sx={{ ml: 2 }}
-          >
-            Logout
-          </Button>
-        </Toolbar>
+        <Toolbar>
+  <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+    {isMobile && (
+      <IconButton color="inherit" edge="start" onClick={toggleDrawer}>
+        <Menu />
+      </IconButton>
+    )}
+
+    <Typography variant="h5" sx={{ flexGrow: 1, textAlign: isMobile ? 'center' : 'left' }}>
+      ClinicCare+
+    </Typography>
+
+    <Button
+      color="inherit"
+      startIcon={<Logout />}
+      onClick={handleLogout}
+      sx={{ whiteSpace: 'nowrap' }}
+    >
+      Logout
+    </Button>
+  </Box>
+</Toolbar>
+
       </AppBar>
 
       {!isDashboard && (
