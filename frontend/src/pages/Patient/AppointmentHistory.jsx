@@ -62,7 +62,7 @@ const upcomingAppointments = appointments.filter(
 
 const pastAppointments = appointments.filter(
   (appt) =>
-    isPastAppointment(appt.date) || appt.status === "Cancelled"
+    isPastAppointment(appt.date) || appt.status === "Cancelled"|| appt.status === 'Completed'
 );
 
 
