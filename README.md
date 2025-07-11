@@ -75,6 +75,57 @@ To develop a scalable, secure, and efficient web-based doctor appointment bookin
 
 ---
 
+## 📦 How to Run the Project Locally
+
+### 1. **Clone the Repository**
+
+```bash
+git clone https://github.com/bhadra-unni/clinic-management-project.git
+cd clinic-management-project
+```
+### 2. Install Dependencies
+🔹 Backend
+```bash
+cd backend
+npm install
+```
+🔹 Frontend
+```bash
+cd frontend
+npm install
+```
+### 3. Set Up Environment Variables
+In the backend/ folder, Copy .env.example and configure:
+```bash
+cp .env.example .env
+```
+Update .env with your values:
+```bash
+MONGO_URI=your_actual_mongodb_connection_uri
+JWT_SECRET=your_custom_secret_key
+PORT=5000
+```
+🔐 Do not commit this file to GitHub.
+
+### 4. Run the Application
+🟢 Start Backend Server
+```bash
+cd backend
+node index.js
+```
+🔵 Start Frontend App
+Open a second terminal:
+```bash
+cd frontend
+npm run dev
+```
+### 5. Access the App
+Open your browser and go to:
+```bash
+http://localhost:3000
+```
+---
+
 ## 👥 Contributors
 
 - [Ayana Joy](https://github.com/ayanajoy)
